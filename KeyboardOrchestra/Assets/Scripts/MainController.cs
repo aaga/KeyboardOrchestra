@@ -5,7 +5,11 @@ using UnityEngine;
 public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text, action
-	private string[,,] specialWords = new string[,,] { {{ "Cue the horns", "horns", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}}, {{ "Add Bass Line", "b", "greyOut"}, { "Play this Melody", "fff ce d ff g", "greyOut"}}};
+	private string[,,] specialWords = new string[,,] { 
+		{{ "Cue the horns", "horns", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}},
+		{{ "Add Bass Line", "b", "greyOut"}, { "Type a Melody", "", "melody"}},
+		{{ "Waiting for next instruction...", "", "waiting"}, { "Waiting for next instruction...", "", "waiting"}}
+	};
 
 	public GameObject step1;
 	public GameObject step2;
@@ -106,13 +110,17 @@ public class MainController : MonoBehaviour {
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
+		//full loop has passed!!!
 		if (myPos >= previousPos + 1.0f) {
 			previousPos = previousPos + 1.0f;
 
 			if (currRound == 0) {
 				myChuck.RunCode ("0.5 => Global.synthGain");
+
 			} else if (currRound == 1) {
 				myChuck.RunCode ("0.5 => Global.bassGain");
+				myChuck.RunCode (step2Script.melodyString + @" @=> Global.synthMelody;");
+				Debug.Log ("passed this melody to chuck: " + step2Script.melodyString );
 			}
 
 			if (currRound < specialWords.GetLength(0)) {
