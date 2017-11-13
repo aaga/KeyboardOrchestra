@@ -81,9 +81,10 @@ public class MainController : MonoBehaviour {
 				    }
 				}
 			}
-			
+					
 			while( true )
 			{
+				Global.synthGain => localSynthGain.gain;
 				spork ~ updatePos();
 				spork ~ playMelody();
 				timeStep::second => now;				
@@ -106,14 +107,16 @@ public class MainController : MonoBehaviour {
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
+		if (myPos >= previousPos + 0.9f) {
+			if (currRound == 0) {
+				myChuck.RunCode ("0.5 => Global.synthGain;");
+			} else if (currRound == 1) {
+				myChuck.RunCode ("0.5 => Global.bassGain;");
+			}
+		}
+
 		if (myPos >= previousPos + 1.0f) {
 			previousPos = previousPos + 1.0f;
-
-			if (currRound == 0) {
-				myChuck.RunCode ("0.5 => Global.synthGain");
-			} else if (currRound == 1) {
-				myChuck.RunCode ("0.5 => Global.bassGain");
-			}
 
 			if (currRound < specialWords.GetLength(0)) {
 				currRound++;
@@ -121,6 +124,7 @@ public class MainController : MonoBehaviour {
 			}
 			Debug.Log ("Current Round: " + currRound);
 		}
+
 		step1Script.linePos = myPos - previousPos;
 		step2Script.linePos = myPos - previousPos;
 	}
