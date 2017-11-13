@@ -6,8 +6,10 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text, action
 	private string[,,] specialWords = new string[,,] { 
-		{{ "Cue the horns", "horns", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}},
+		{{ "Cue the synth", "play synth", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}},
 		{{ "Add Bass Line", "b", "greyOut"}, { "Type a Melody", "", "melody"}},
+		{{ "Type a Melody", "", "melody"}, { "Waiting for next instruction...", "", "waiting"}},
+		{{ "Waiting for next instruction...", "", "waiting"}, { "Type a Melody", "", "melody"}},
 		{{ "Waiting for next instruction...", "", "waiting"}, { "Waiting for next instruction...", "", "waiting"}}
 	};
 
@@ -37,62 +39,6 @@ public class MainController : MonoBehaviour {
 		step2Script = step2.GetComponent<MyStepController> ();
 		myChuck = GetComponent<ChuckInstance> ();
 		myGetPosCallback = Chuck.CreateGetFloatCallback( GetPosCallback );
-
-		myChuck.RunCode (@"
-			public class Global {
-				static float synthGain;
-    			static float bassGain;
-    			static int synthMelody[];
-    			static int bassMelody[];
-			}
-			4 => external float timeStep;
-			external float pos;
-
-			fun void updatePos() {
-				timeStep::second => dur currentTimeStep;
-				currentTimeStep / 1000 => dur deltaTime;
-				now => time startTime;
-				
-				pos => float originalPos;
-								
-				while( now < startTime + currentTimeStep )
-				{
-					deltaTime / currentTimeStep +=> pos;
-					deltaTime => now;
-				}
-			}
-
-			[50,53,57,62] @=> Global.synthMelody;
-
-
-
-			0 => Global.synthGain;
-			0 => Global.bassGain;
-
-			SinOsc synth => Gain localSynthGain => dac;
-			SinOsc bass => Gain localBassGain => dac;
-			0 => synth.freq;
-			0 => bass.freq;	
-
-			fun void playMelody() {
-				for (0 => int i; i < 4; i++) {
-				    for (0 => int x; x < Global.synthMelody.cap(); x++)
-				    {
-				        Global.synthMelody[x] => Std.mtof => synth.freq;
-				        125::ms => now;
-				        0 => synth.freq;
-				        125::ms => now;
-				    }
-				}
-			}
-			
-			while( true )
-			{
-				spork ~ updatePos();
-				spork ~ playMelody();
-				timeStep::second => now;				
-			}
-		");
 	}
 	
 	// Update is called once per frame
@@ -111,17 +57,21 @@ public class MainController : MonoBehaviour {
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
 		//full loop has passed!!!
-		if (myPos >= previousPos + 1.0f) {
-			previousPos = previousPos + 1.0f;
+		if (myPos >= previousPos + 0.95f) {
 
 			if (currRound == 0) {
-				myChuck.RunCode ("0.5 => Global.synthGain");
+				myChuck.RunCode ("0.5 => Global.synthGain;");
 
-			} else if (currRound == 1) {
-				myChuck.RunCode ("0.5 => Global.bassGain");
+			} else if (currRound >= 1) {
+				myChuck.RunCode ("0.5 => Global.bassGain;");
 				myChuck.RunCode (step2Script.melodyString + @" @=> Global.synthMelody;");
+				myChuck.RunCode (step1Script.melodyString + @" @=> Global.synthMelody;");
 				Debug.Log ("passed this melody to chuck: " + step2Script.melodyString );
 			}
+		}
+
+		if (myPos >= previousPos + 1.0f) {
+			previousPos = previousPos + 1.0f;
 
 			if (currRound < specialWords.GetLength(0)) {
 				currRound++;
@@ -129,6 +79,7 @@ public class MainController : MonoBehaviour {
 			}
 			Debug.Log ("Current Round: " + currRound);
 		}
+
 		step1Script.linePos = myPos - previousPos;
 		step2Script.linePos = myPos - previousPos;
 	}
@@ -145,7 +96,76 @@ public class MainController : MonoBehaviour {
 		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
 			if (Input.GetKeyDown (vKey)) {
 				if ("Return" == vKey.ToString ()) {
-					
+					myChuck.RunCode (@"
+						public class Global {
+							static float synthGain;
+			    			static float bassGain;
+			    			static int synthMelody[];
+			    			static int bassMelody[];
+						}
+						4 => external float timeStep;
+						external float pos;
+
+						fun void updatePos() {
+							timeStep::second => dur currentTimeStep;
+							currentTimeStep / 1000 => dur deltaTime;
+							now => time startTime;
+							
+							pos => float originalPos;
+											
+							while( now < startTime + currentTimeStep )
+							{
+								deltaTime / currentTimeStep +=> pos;
+								deltaTime => now;
+							}
+						}
+
+						[60,63,67,72] @=> Global.synthMelody;
+						[55,55,60,60] @=> Global.bassMelody;
+
+
+
+						0 => Global.synthGain;
+						0 => Global.bassGain;
+
+						SinOsc synth => Gain localSynthGain => dac;
+						SinOsc bass => Gain localBassGain => dac;
+						0 => synth.freq;
+						0 => bass.freq;	
+
+						fun void playMelody() {
+							for (0 => int i; i < 4; i++) {
+							    for (0 => int x; x < Global.synthMelody.cap(); x++)
+							    {
+							        Global.synthMelody[x] => Std.mtof => synth.freq;
+							        125::ms => now;
+							        0 => synth.freq;
+							        125::ms => now;
+							    }
+							}
+						}
+						
+						fun void playBass() {
+							for (0 => int i; i < 4; i++) {
+							    for (0 => int x; x < Global.bassMelody.cap(); x++)
+							    {
+							        Global.bassMelody[x] => Std.mtof => bass.freq;
+							        250::ms => now;
+
+							    }
+							}
+						}
+								
+						while( true )
+						{
+							Global.synthGain => localSynthGain.gain;
+							Global.bassGain => localBassGain.gain;
+							spork ~ updatePos();
+							spork ~ playMelody();
+							spork ~ playBass();
+							timeStep::second => now;				
+						}
+					");
 				}
 
 			}

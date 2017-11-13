@@ -9,7 +9,7 @@ public class MyStepController : MonoBehaviour {
 	private TextMesh instructionMesh;
 	private TextMesh inputMesh;
 //	private string[,] specialWords = new string[,] { { "VOID", "void"},{ "RETURN", "return"},{ "GE", "ge"},{ "=>", "chuck"}, {"TEST", "0"} , {"OOOO", "100"}};
-	private string[,] acceptableKeys = new string[,] { { "A", "A", "0"}, { "B", "B", "0"}, { "C", "C", "0"}, { "D", "D", "0"}, { "E", "E", "0"}, { "F", "F", "0"}, { "G", "G", "0"}, { "H", "H", "0"}, { "I", "I", "0"}, { "J", "J", "0"}, { "K", "K", "0"}, { "L", "L", "0"}, { "M", "M", "0"}, { "N", "N", "0"}, { "O", "O", "0"}, { "P", "P", "0"}, { "Q", "Q", "0"}, { "R", "R", "0"}, { "S", "S", "0"}, { "T", "T", "0"}, { "U", "U", "0"}, { "V", "V", "0"}, { "W", "W", "0"}, { "X", "X", "0"}, { "Y", "Y", "0"}, { "Z", "Z", "0"}, { "0", "0", "0"}, { "1", "1", "0"}, { "2", "2", "0"}, { "3", "3", "0"}, { "4", "4", "0"}, { "5", "5", "0"}, { "6", "6", "0"}, { "7", "7", "0"}, { "8", "8", "0"}, { "9", "9", "0"}, { "0", "0", "0"}, { "Semicolon", ";", "0"}, { "Equals", "=", "0"}, { "Return", "", "0"}, { "Backspace", "", "0"}, { "LeftParen", "(", "0"}, { "RightParen", ")", "0"},{ "DoubleQuote", @"""", "0"},{ "Plus", "+", "0"},{ "Minus", "-", "0"},{ "Period", ".", "0"},{ "Colon", ":", "0"},{ "Greater", ">", "0"},{ "Less", "<", "0"},{ "Slash", "/", "0"},{ "Space", " ", "1"}};
+	private string[,] acceptableKeys = new string[,] { { "A", "a", "0"}, { "B", "b", "0"}, { "C", "c", "0"}, { "D", "d", "0"}, { "E", "e", "0"}, { "F", "f", "0"}, { "G", "g", "0"}, { "H", "h", "0"}, { "I", "i", "0"}, { "J", "j", "0"}, { "K", "k", "0"}, { "L", "l", "0"}, { "M", "m", "0"}, { "N", "n", "0"}, { "O", "o", "0"}, { "P", "p", "0"}, { "Q", "q", "0"}, { "R", "r", "0"}, { "S", "s", "0"}, { "T", "t", "0"}, { "U", "u", "0"}, { "V", "v", "0"}, { "W", "w", "0"}, { "X", "x", "0"}, { "Y", "y", "0"}, { "Z", "z", "0"}, { "0", "0", "0"}, { "1", "1", "0"}, { "2", "2", "0"}, { "3", "3", "0"}, { "4", "4", "0"}, { "5", "5", "0"}, { "6", "6", "0"}, { "7", "7", "0"}, { "8", "8", "0"}, { "9", "9", "0"}, { "0", "0", "0"}, { "Semicolon", ";", "0"}, { "Equals", "=", "0"}, { "Return", "", "0"}, { "Backspace", "", "0"}, { "LeftParen", "(", "0"}, { "RightParen", ")", "0"},{ "DoubleQuote", @"""", "0"},{ "Plus", "+", "0"},{ "Minus", "-", "0"},{ "Period", ".", "0"},{ "Colon", ":", "0"},{ "Greater", ">", "0"},{ "Less", "<", "0"},{ "Slash", "/", "0"},{ "Space", " ", "1"}};
 //	public int presetButton;
 	public GameObject instructionText;
 	public GameObject inputText;
@@ -86,8 +86,8 @@ public class MyStepController : MonoBehaviour {
 						//inputMesh.text += letterToAdd;
 						//Debug.Log("key pressed, currletter is: " + stepInstructions [1][currLetter]);
 						if (stepInstructions [2] == "greyOut" && currLetter < stepInstructions[1].Length) {
-							Debug.Log ("should be first char (h):" + vKey.ToString () [0]);
-							if(vKey.ToString ().ToLower()[0] == stepInstructions [1][currLetter]){
+							Debug.Log ("should be first char (h):" + letterToAdd);
+							if(letterToAdd[0] == stepInstructions [1][currLetter]){
 								Debug.Log("made it" + stepInstructions [1][currLetter]);
 								//inputMesh.text = inputMesh.text.Replace (inputMesh.text [23*currLetter)].ToString (), "<color=#00FF00>" + inputMesh.text [currLetter].ToString () + "</color>");
 
