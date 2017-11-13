@@ -14,11 +14,15 @@ public class MyStepController : MonoBehaviour {
 //	public int presetButton;
 	public GameObject instructionText;
 	public GameObject inputText;
+	public GameObject ticker;
 	private int currLetter;
+
+	private float initialTickerX;
 
 
 	public string[] stepInstructions;
 	public bool newRound;
+	public float linePos;
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +30,9 @@ public class MyStepController : MonoBehaviour {
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
 		inputMesh = (TextMesh)inputText.GetComponent(typeof(TextMesh));
 		currLetter = 0;
+		linePos = 0.0f;
+
+		initialTickerX = ticker.transform.position.x;
 
 //		for (int i = 0; i < acceptableKeys.GetLength(0); i++) {
 //			acceptableKeys[i,2] = (i+72).ToString();
@@ -47,6 +54,10 @@ public class MyStepController : MonoBehaviour {
 			}
 			newRound = false;
 		}
+
+		Vector3 temp = ticker.transform.position;
+		temp.x = initialTickerX + linePos * 25f;
+		ticker.transform.position = temp;
 
 		//do the interaction
 		getKey();
@@ -72,7 +83,7 @@ public class MyStepController : MonoBehaviour {
 						}
 						//inputMesh.text += letterToAdd;
 						//Debug.Log("key pressed, currletter is: " + stepInstructions [1][currLetter]);
-						if (stepInstructions [2] == "greyOut") {
+						if (stepInstructions [2] == "greyOut" && currLetter < stepInstructions[1].Length) {
 							Debug.Log ("should be first char (h):" + vKey.ToString () [0]);
 							if(vKey.ToString ().ToLower()[0] == stepInstructions [1][currLetter]){
 								Debug.Log("made it" + stepInstructions [1][currLetter]);

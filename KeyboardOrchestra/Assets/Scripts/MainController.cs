@@ -10,6 +10,9 @@ public class MainController : MonoBehaviour {
 	public GameObject step1;
 	public GameObject step2;
 
+	ChuckInstance myChuck;
+	Chuck.FloatCallback myGetPosCallback;
+
 	private MyStepController step1Script;
 	private MyStepController step2Script;
 
@@ -17,13 +20,75 @@ public class MainController : MonoBehaviour {
 //	public GameObject step4;
 
 	private int currRound = 0;
+	private float myPos;
+	private float previousPos;
 	private bool updatedRound;
 
 	// Use this for initialization
 	void Start () {
 		updatedRound = false;
+		myPos = 0.0f;
+		previousPos = 0.0f;
 		step1Script = step1.GetComponent<MyStepController> ();
 		step2Script = step2.GetComponent<MyStepController> ();
+		myChuck = GetComponent<ChuckInstance> ();
+		myGetPosCallback = Chuck.CreateGetFloatCallback( GetPosCallback );
+
+		myChuck.RunCode (@"
+			public class Global {
+				static float synthGain;
+    			static float bassGain;
+    			static int synthMelody[];
+    			static int bassMelody[];
+			}
+			4 => external float timeStep;
+			external float pos;
+
+			fun void updatePos() {
+				timeStep::second => dur currentTimeStep;
+				currentTimeStep / 1000 => dur deltaTime;
+				now => time startTime;
+				
+				pos => float originalPos;
+								
+				while( now < startTime + currentTimeStep )
+				{
+					deltaTime / currentTimeStep +=> pos;
+					deltaTime => now;
+				}
+			}
+
+			[50,53,57,62] @=> Global.synthMelody;
+
+
+
+			0 => Global.synthGain;
+			0 => Global.bassGain;
+
+			SinOsc synth => Gain localSynthGain => dac;
+			SinOsc bass => Gain localBassGain => dac;
+			0 => synth.freq;
+			0 => bass.freq;	
+
+			fun void playMelody() {
+				for (0 => int i; i < 4; i++) {
+				    for (0 => int x; x < Global.synthMelody.cap(); x++)
+				    {
+				        Global.synthMelody[x] => Std.mtof => synth.freq;
+				        125::ms => now;
+				        0 => synth.freq;
+				        125::ms => now;
+				    }
+				}
+			}
+			
+			while( true )
+			{
+				spork ~ updatePos();
+				spork ~ playMelody();
+				timeStep::second => now;				
+			}
+		");
 	}
 	
 	// Update is called once per frame
@@ -39,6 +104,25 @@ public class MainController : MonoBehaviour {
 			step2Script.newRound = true;
 			updatedRound = true;
 		}
+
+		myChuck.GetFloat ("pos", myGetPosCallback);
+		if (myPos >= previousPos + 1.0f) {
+			previousPos = previousPos + 1.0f;
+
+			if (currRound == 0) {
+				myChuck.RunCode ("0.5 => Global.synthGain");
+			} else if (currRound == 1) {
+				myChuck.RunCode ("0.5 => Global.bassGain");
+			}
+
+			if (currRound < specialWords.GetLength(0)) {
+				currRound++;
+				updatedRound = false;
+			}
+			Debug.Log ("Current Round: " + currRound);
+		}
+		step1Script.linePos = myPos - previousPos;
+		step2Script.linePos = myPos - previousPos;
 	}
 
 	string[] oneD(int index1, int index2) {
@@ -53,15 +137,16 @@ public class MainController : MonoBehaviour {
 		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
 			if (Input.GetKeyDown (vKey)) {
 				if ("Return" == vKey.ToString ()) {
-					if (currRound < specialWords.GetLength(0)) {
-						currRound++;
-						updatedRound = false;
-					}
-					Debug.Log ("Current Round: " + currRound);
+					
 				}
 
 			}
 		}
+	}
+
+	void GetPosCallback( System.Double pos )
+	{
+		myPos = (float) pos;
 	}
 }
 
