@@ -216,16 +216,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 102042600480224892, guid: 6264fc19b3c80458898994baec620514,
-        type: 2}
-      propertyPath: m_RichText
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 102042600480224892, guid: 6264fc19b3c80458898994baec620514,
-        type: 2}
-      propertyPath: m_Text
-      value: User Text
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6264fc19b3c80458898994baec620514, type: 2}
   m_IsPrefabParent: 0
@@ -342,10 +332,10 @@ TextMesh:
   m_Anchor: 1
   m_Alignment: 1
   m_TabSize: 4
-  m_FontSize: 30
+  m_FontSize: 100
   m_FontStyle: 0
   m_RichText: 1
-  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Font: {fileID: 12800000, guid: 49068d07a44494a9aa74d5d288da08c4, type: 3}
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
@@ -364,7 +354,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 2100000, guid: 49068d07a44494a9aa74d5d288da08c4, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -391,9 +381,9 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 811084467}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.6, y: 16.1, z: 3.04675}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.5, y: 16.801, z: 0}
+  m_LocalScale: {x: 0.40022004, y: 0.40022013, z: 0.40022013}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -677,11 +667,6 @@ Prefab:
     - target: {fileID: 1196034652406074, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_Name
       value: Step 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 102073202730093014, guid: 6264fc19b3c80458898994baec620514,
-        type: 2}
-      propertyPath: m_Text
-      value: Instruction Text
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6264fc19b3c80458898994baec620514, type: 2}

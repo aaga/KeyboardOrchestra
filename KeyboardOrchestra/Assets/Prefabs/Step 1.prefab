@@ -121,8 +121,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1759700477298548}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.799999, y: 7.1, z: -0.0011701584}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -10.76, y: 7.5, z: -0.0011701584}
+  m_LocalScale: {x: 0.11792062, y: 0.11792063, z: 0.11792063}
   m_Children: []
   m_Father: {fileID: 4035737585304548}
   m_RootOrder: 1
@@ -134,8 +134,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1927350314393370}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.01, y: -0.18, z: -0.0007100105}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.15, y: 0.31, z: -0.0007100105}
+  m_LocalScale: {x: 0.22029729, y: 0.22029737, z: 0.22029737}
   m_Children: []
   m_Father: {fileID: 4035737585304548}
   m_RootOrder: 2
@@ -180,7 +180,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 2100000, guid: bc619c3aa7c6842eb910dad0eaf716a2, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -282,7 +282,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 2100000, guid: bc619c3aa7c6842eb910dad0eaf716a2, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -361,10 +361,10 @@ TextMesh:
   m_FontSize: 0
   m_FontStyle: 0
   m_RichText: 1
-  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Font: {fileID: 12800000, guid: bc619c3aa7c6842eb910dad0eaf716a2, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4290427578
+    rgba: 4285493103
 --- !u!102 &102073202730093014
 TextMesh:
   serializedVersion: 3
@@ -379,10 +379,10 @@ TextMesh:
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 0
+  m_FontSize: 100
   m_FontStyle: 0
   m_RichText: 1
-  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Font: {fileID: 12800000, guid: bc619c3aa7c6842eb910dad0eaf716a2, type: 3}
   m_Color:
     serializedVersion: 2
     rgba: 4278190080
@@ -403,3 +403,5 @@ MonoBehaviour:
   stepInstructions: []
   newRound: 0
   linePos: 0
+  melodyString: 
+  volumeCount: 0

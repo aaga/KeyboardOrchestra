@@ -9,7 +9,7 @@ public class MainController : MonoBehaviour {
 		{{ "Cue the synth", "play synth", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}},
 		{{ "Add Bass Line", "b", "greyOut"}, { "Type a Melody", "", "melody"}},
 		{{ "Type a Melody", "", "melody"}, { "Waiting for next instruction...", "", "waiting"}},
-		{{ "Waiting for next instruction...", "", "waiting"}, { "Type a Melody", "", "melody"}},
+		{{ "Change the volume of the synth", "type v: ", "volume"}, { "Waiting for next instruction...", "", "waiting"}},
 		{{ "Waiting for next instruction...", "", "waiting"}, { "Waiting for next instruction...", "", "waiting"}}
 	};
 
@@ -66,7 +66,17 @@ public class MainController : MonoBehaviour {
 				myChuck.RunCode ("0.5 => Global.bassGain;");
 				myChuck.RunCode (step2Script.melodyString + @" @=> Global.synthMelody;");
 				myChuck.RunCode (step1Script.melodyString + @" @=> Global.synthMelody;");
-				Debug.Log ("passed this melody to chuck: " + step2Script.melodyString );
+				Debug.Log ("passed this melody to chuck: " + step2Script.melodyString);
+
+			}
+			if (currRound >= 3) {
+				float tempVolumeSet = step1Script.volumeCount;
+				if (tempVolumeSet > 1.0f) {
+					tempVolumeSet = 1.0f;
+				}
+				myChuck.RunCode ( tempVolumeSet + @" => Global.synthGain;");
+				Debug.Log ("changing the synth volume to  " +  step1Script.volumeCount);
+				//hacked to be range of 0-10
 			}
 		}
 

@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 49068d07a44494a9aa74d5d288da08c4
+timeCreated: 1510620837
+licenseType: Free
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 150
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: OCR A Std
+  fontNames:
+  - OCR A Std
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

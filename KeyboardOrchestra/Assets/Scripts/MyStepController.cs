@@ -25,6 +25,9 @@ public class MyStepController : MonoBehaviour {
 	//created melody text
 	public string melodyString;
 
+	//created melody text
+	public float volumeCount;
+
 	// Use this for initialization
 	void Start () {
 		newRound = true;
@@ -50,6 +53,7 @@ public class MyStepController : MonoBehaviour {
 			currLetter = 0;
 			//initialize empty melody array
 			melodyString = "[]";
+			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
 				instructionMesh.text = stepInstructions [0];
 				inputMesh.text = stepInstructions [1];
@@ -85,7 +89,7 @@ public class MyStepController : MonoBehaviour {
 						}
 						//inputMesh.text += letterToAdd;
 						//Debug.Log("key pressed, currletter is: " + stepInstructions [1][currLetter]);
-						if (stepInstructions [2] == "greyOut" && currLetter < stepInstructions[1].Length) {
+						if (stepInstructions [2] == "greyOut"  && currLetter < stepInstructions[1].Length) {
 							Debug.Log ("should be first char (h):" + letterToAdd);
 							if(letterToAdd[0] == stepInstructions [1][currLetter]){
 								Debug.Log("made it" + stepInstructions [1][currLetter]);
@@ -110,6 +114,14 @@ public class MyStepController : MonoBehaviour {
 							melodyString += acceptableKeys [it, 2];;
 							melodyString += "]";
 							inputMesh.text += letterToAdd;
+						}
+						if (stepInstructions [2] == "volume") {
+							//remove the "]" from the previous array
+							if (vKey.ToString () == "V") {
+								volumeCount+=0.1f; 
+								inputMesh.text += letterToAdd;
+
+							}
 
 						}
 							
