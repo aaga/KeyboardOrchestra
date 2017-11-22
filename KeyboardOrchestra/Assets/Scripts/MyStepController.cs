@@ -72,8 +72,8 @@ public class MyStepController : MonoBehaviour {
 				instructionMesh.text = stepInstructions [0];
 				//inputMesh.text = stepInstructions [1];
 
-				addGraphicKeys (stepInstructions [1], 0f, currKeysTop);
-				addGraphicKeys (stepInstructions [2], -4f, currKeysBottom);
+				addGraphicKeys (stepInstructions [1], 0f, currKeysTop,"top");
+				addGraphicKeys (stepInstructions [2], -4f, currKeysBottom,"bottom");
 
 			}
 			newRound = false;
@@ -92,7 +92,7 @@ public class MyStepController : MonoBehaviour {
 
 	}
 
-	void addGraphicKeys(String inputWord, float yPos, GameObject currKeys){
+	void addGraphicKeys(string inputWord, float yPos, GameObject currKeys, string whichComputer){
 		//add all new key instructions
 		foreach (Transform child in currKeys.transform) {
 			GameObject.Destroy(child.gameObject);
@@ -109,7 +109,7 @@ public class MyStepController : MonoBehaviour {
 			newKey.transform.position = new Vector3 (startX, yPos, 3f);
 			startX += 3f;
 			newKey.transform.parent = currKeys.transform;
-			if (stepInstructions [4] == "1") {
+			if (whichComputer == "top") {
 				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.blue;
 			} else {
 				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.cyan;
@@ -132,12 +132,15 @@ public class MyStepController : MonoBehaviour {
 								pressTop = true;
 								//new code to handle physical keys turning grey instead of turning text green
 								//backgorund of key
+								currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 							}
 						}
 
 						if (currLetter < stepInstructions [2].Length) {
 							if (letterToAdd [0] == stepInstructions [2] [currLetter]) {
 								pressBottom = true;
+								currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
+
 							}
 						}
 
@@ -168,9 +171,13 @@ public class MyStepController : MonoBehaviour {
 						string letterToAdd = acceptableKeys [it, 1];
 						if (currLetter < stepInstructions [1].Length && letterToAdd [0] == stepInstructions [1] [currLetter]) {
 							pressTop = false;
+							currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.blue;
+
 						}
 						if (currLetter < stepInstructions [2].Length && letterToAdd [0] == stepInstructions [2] [currLetter]) {
 							pressBottom = false;
+							currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.cyan;
+
 						}
 					}
 				}
