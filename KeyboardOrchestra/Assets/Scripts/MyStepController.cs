@@ -16,6 +16,11 @@ public class MyStepController : MonoBehaviour {
 	public GameObject ticker;
 	private int currLetter;
 
+	private GameObject currKeysTop;
+	private GameObject currKeysBottom;
+	private bool pressTop;
+	private bool pressBottom;
+
 	private float initialTickerX;
 
 	public string[] stepInstructions;
@@ -43,6 +48,15 @@ public class MyStepController : MonoBehaviour {
 		}
 		//set space to none
 		acceptableKeys[acceptableKeys.GetLength(0) -1,2] = "0";
+
+		//create container to have new keys added
+		currKeysTop = new GameObject("currKeysTop");
+		currKeysTop.AddComponent<MeshFilter>();
+		currKeysTop.AddComponent<MeshRenderer>();
+		currKeysBottom = new GameObject("currKeysBottom");
+		currKeysBottom.AddComponent<MeshFilter>();
+		currKeysBottom.AddComponent<MeshRenderer>();
+
 	}
 
 	// Update is called once per frame
@@ -56,9 +70,17 @@ public class MyStepController : MonoBehaviour {
 			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
 				instructionMesh.text = stepInstructions [0];
-				inputMesh.text = stepInstructions [1];
+				//inputMesh.text = stepInstructions [1];
+
+				addGraphicKeys (stepInstructions [1], 0f, currKeysTop);
+				addGraphicKeys (stepInstructions [2], -4f, currKeysBottom);
+
 			}
 			newRound = false;
+
+			//no keys pressed
+			pressTop = false;
+			pressBottom = false;
 		}
 
 		Vector3 temp = ticker.transform.position;
@@ -70,91 +92,90 @@ public class MyStepController : MonoBehaviour {
 
 	}
 
+	void addGraphicKeys(String inputWord, float yPos, GameObject currKeys){
+		//add all new key instructions
+		foreach (Transform child in currKeys.transform) {
+			GameObject.Destroy(child.gameObject);
+		}
+
+		float startX = -14f;
+		foreach (char c in inputWord)
+		{
+			GameObject newKey = (GameObject)Instantiate(Resources.Load("Default Key"));
+			TextMesh newKeyText = (TextMesh)newKey.transform.GetChild (0).GetComponent (typeof(TextMesh));
+			newKeyText.text = c.ToString();
+			Debug.Log("new key created with text: ", newKeyText);
+			Debug.Log (c);
+			newKey.transform.position = new Vector3 (startX, yPos, 3f);
+			startX += 3f;
+			newKey.transform.parent = currKeys.transform;
+			if (stepInstructions [4] == "1") {
+				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.blue;
+			} else {
+				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.cyan;
+
+			}
+		}
+
+	}
+
 	void getKey(){
 		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
 			if (Input.GetKeyDown (vKey)) {
 				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
 					if (acceptableKeys [it, 0] == vKey.ToString ()) {
 						string letterToAdd = acceptableKeys [it, 1];
-						if (vKey.ToString () == "Space") {
-							//addColorToWords();
-						}else if(vKey.ToString () == "Return"){
-							//t.text += System.Environment.NewLine;	//add new line
-							//addColorToWords();
-							//proceed to next step
-
-						}else if(vKey.ToString () == "Backspace"){
-							//don't allow backspace 
-							//t.text = t.text.Substring(0,(t.text.Length - 1));
-						}
-						//inputMesh.text += letterToAdd;
-						//Debug.Log("key pressed, currletter is: " + stepInstructions [1][currLetter]);
-						if (stepInstructions [2] == "greyOut"  && currLetter < stepInstructions[1].Length) {
+						Debug.Log ("MOST IMPORTANT: " + letterToAdd);
+						if (currLetter < stepInstructions [1].Length) {
 							Debug.Log ("should be first char (h):" + letterToAdd);
-							if(letterToAdd[0] == stepInstructions [1][currLetter]){
-								Debug.Log("made it" + stepInstructions [1][currLetter]);
-								//inputMesh.text = inputMesh.text.Replace (inputMesh.text [23*currLetter)].ToString (), "<color=#00FF00>" + inputMesh.text [currLetter].ToString () + "</color>");
-
-								inputMesh.text = inputMesh.text.Substring(0, 24*currLetter + 1) + "</color>" + inputMesh.text.Substring(24*currLetter + 1);
-								inputMesh.text = inputMesh.text.Substring(0, 24*currLetter) + "<color=#00FF00>" + inputMesh.text.Substring(24	*currLetter);
-								Debug.Log ("markedup text" + inputMesh.text);
-
-								currLetter++;
-
+							if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
+								pressTop = true;
+								//new code to handle physical keys turning grey instead of turning text green
+								//backgorund of key
 							}
 						}
-						if (stepInstructions [2] == "melody") {
-							//remove the "]" from the previous array
-							melodyString = melodyString.Substring (0, (melodyString.Length - 1));
 
-							//dont add comma before first entry
-							if (melodyString.Length > 1) {
-								melodyString += ",";
+						if (currLetter < stepInstructions [2].Length) {
+							if (letterToAdd [0] == stepInstructions [2] [currLetter]) {
+								pressBottom = true;
 							}
-							melodyString += acceptableKeys [it, 2];;
-							melodyString += "]";
-							inputMesh.text += letterToAdd;
 						}
-						if (stepInstructions [2] == "volume") {
-							//remove the "]" from the previous array
-							if (vKey.ToString () == "V") {
-								volumeCount+=0.1f; 
-								inputMesh.text += letterToAdd;
 
-							}
-
+						if (pressTop && pressBottom) {
+							pressBottom = false;
+							pressTop = false;
+							currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.green;
+							currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = Color.green;
+							currLetter++;
+						}else if (pressTop && currLetter >= stepInstructions [2].Length) {
+							pressBottom = false;
+							pressTop = false;
+							currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.green;
+							currLetter++;
+						}else if (pressBottom && currLetter >= stepInstructions [1].Length) {
+							pressBottom = false;
+							pressTop = false;
+							currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = Color.green;
+							currLetter++;
 						}
-							
+					}
+				}
+			}
+			//change bool when no longer pressed down
+			if (Input.GetKeyUp (vKey)) {
+				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
+					if (acceptableKeys [it, 0] == vKey.ToString ()) {
+						string letterToAdd = acceptableKeys [it, 1];
+						if (currLetter < stepInstructions [1].Length && letterToAdd [0] == stepInstructions [1] [currLetter]) {
+							pressTop = false;
+						}
+						if (currLetter < stepInstructions [2].Length && letterToAdd [0] == stepInstructions [2] [currLetter]) {
+							pressBottom = false;
+						}
 					}
 				}
 			}
 		}
 
 	}
-
-//	void addColorToWords(){
-//		string word = "";
-//		int wordStart = 0;
-//		for (int letter = 0; letter < t.text.Length; letter++) {
-//			Debug.Log ("searching for a special word" + word);
-//			if (t.text.Substring (letter, 1) != " ") {
-//				word += t.text.Substring (letter, 1);
-//			} 
-//			if(t.text.Substring (letter, 1) == " " || letter == t.text.Length - 1){
-//				for (int special = 0; special < specialWords.GetLength (0) - 1; special++) {
-//					if (specialWords [special, 0] == word) {
-//						Debug.Log ("found a special word" + word);
-//						t.text = t.text.Substring(0, letter + 1) + "</color>" + t.text.Substring(letter + 1);
-//						//do this second becuase otherwise will mess up element position for adding second tag
-//						t.text = t.text.Substring(0, wordStart) + "<color=white>" + t.text.Substring(wordStart);
-//						Debug.Log ("markedup text" + t.text);
-//
-//					}
-//				}
-//				word = "";
-//				wordStart = letter + 1;
-//			}
-//		}
-//	}
-
 }

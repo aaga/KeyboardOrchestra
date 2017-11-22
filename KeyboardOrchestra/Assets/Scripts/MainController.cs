@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class MainController : MonoBehaviour {
 
-	//Instruciton Text, input Text, action
+	//Instruciton Text, input Text 1, input Text 2, action type, computer keyboard (1-master or 2-slave)
 	private string[,,] specialWords = new string[,,] { 
-		{{ "Cue the synth", "play synth", "greyOut"}, { "Waiting for next instruction...", "", "waiting"}},
-		{{ "Add Bass Line", "b", "greyOut"}, { "Type a Melody", "", "melody"}},
-		{{ "Type a Melody", "", "melody"}, { "Waiting for next instruction...", "", "waiting"}},
-		{{ "Change the volume of the synth", "type v: ", "volume"}, { "Waiting for next instruction...", "", "waiting"}},
-		{{ "Waiting for next instruction...", "", "waiting"}, { "Waiting for next instruction...", "", "waiting"}}
+		{ { "Cue the synth", "synth", "", "greyOut", "1" }, { "", "", "", "", "2" } },
+		{ { "Add Bass Line", "b", "test", "greyOut", "1" }, { "", "", "", "", "2" } },
+		{ { "Type this Melody", "cc a d b", "", "greyOut", "2" }, { "", "", "", "", "1" } },
+		{ { "Change the Bass Volume", ";;;;;;;;;", "", "greyOut", "1" }, { "", "", "", "", "1" } },
+		{ { "Waiting for next instruction...", "", "", "waiting", "1" }, { "", "", "", "", "1" } }
 	};
 
 	public GameObject step1;
@@ -21,9 +21,6 @@ public class MainController : MonoBehaviour {
 
 	private MyStepController step1Script;
 	private MyStepController step2Script;
-
-//	public GameObject step3;
-//	public GameObject step4;
 
 	private int currRound = 0;
 	private float myPos;
@@ -95,10 +92,14 @@ public class MainController : MonoBehaviour {
 	}
 
 	string[] oneD(int index1, int index2) {
-		string[] oneDArray = new string[3];
+		string[] oneDArray = new string[5];
 		oneDArray [0] = specialWords [index1, index2, 0];
 		oneDArray [1] = specialWords [index1, index2, 1];
 		oneDArray [2] = specialWords [index1, index2, 2];
+		oneDArray [3] = specialWords [index1, index2, 3];
+		oneDArray [4] = specialWords [index1, index2, 4];
+
+
 		return oneDArray;
 	}
 
