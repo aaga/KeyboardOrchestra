@@ -6,10 +6,10 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, action type
 	private string[,,] specialWords = new string[,,] { 
-		{ { "Cue the synth", "synth", "", "greyOut" }, { "", "", "", ""} },
+		{ { "Cue the synth", "a", "synth", "greyOut" }, { "", "", "", ""} },
 		{ { "Add Bass Line", "b", "test", "greyOut"}, { "", "", "", ""} },
-		{ { "Type this Melody", "cc a d", "", "greyOut"}, { "", "", "", ""} },
-		{ { "Change the Bass Volume", ";;;;;;", "", "greyOut"}, { "", "", "", ""} },
+		{ { "Type this Melody", "", "cc a d", "greyOut"}, { "", "", "", ""} },
+		{ { "Change the Bass Volume", "", ";;;;;;", "greyOut"}, { "", "", "", ""} },
 		{ { "Waiting for next instruction...", "", "", "waiting"}, { "", "", "", ""} }
 	};
 
@@ -55,7 +55,7 @@ public class MainController : MonoBehaviour {
 		myChuck.GetFloat ("pos", myGetPosCallback);
 		//full loop has passed!!!
 		if (myPos >= previousPos + 0.95f) {
-
+			/*
 			if (currRound == 0) {
 				myChuck.RunCode ("0.5 => Global.synthGain;");
 
@@ -75,6 +75,7 @@ public class MainController : MonoBehaviour {
 				Debug.Log ("changing the synth volume to  " +  step1Script.volumeCount);
 				//hacked to be range of 0-10
 			}
+			*/
 		}
 
 		if (myPos >= previousPos + 1.0f) {
