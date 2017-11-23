@@ -56,24 +56,27 @@ public class MainController : MonoBehaviour {
 		//full loop has passed!!!
 		if (myPos >= previousPos + 0.95f) {
 
-			if (currRound == 0) {
-				myChuck.RunCode ("0.5 => Global.synthGain;");
+			//check if both steps done
+			if (step1Script.bottomDone == true && step1Script.topDone == true) {
+				if (currRound == 0) {
+					myChuck.RunCode ("0.5 => Global.synthGain;");
 
-			} else if (currRound >= 1) {
-				myChuck.RunCode ("0.5 => Global.bassGain;");
-				myChuck.RunCode (step2Script.melodyString + @" @=> Global.synthMelody;");
-				myChuck.RunCode (step1Script.melodyString + @" @=> Global.synthMelody;");
-				Debug.Log ("passed this melody to chuck: " + step2Script.melodyString);
+				} else if (currRound >= 1) {
+					myChuck.RunCode ("0.5 => Global.bassGain;");
+					myChuck.RunCode (step2Script.melodyString + @" @=> Global.synthMelody;");
+					myChuck.RunCode (step1Script.melodyString + @" @=> Global.synthMelody;");
+					Debug.Log ("passed this melody to chuck: " + step2Script.melodyString);
 
-			}
-			if (currRound >= 3) {
-				float tempVolumeSet = step1Script.volumeCount;
-				if (tempVolumeSet > 1.0f) {
-					tempVolumeSet = 1.0f;
 				}
-				myChuck.RunCode ( tempVolumeSet + @" => Global.synthGain;");
-				Debug.Log ("changing the synth volume to  " +  step1Script.volumeCount);
-				//hacked to be range of 0-10
+				if (currRound >= 3) {
+					float tempVolumeSet = step1Script.volumeCount;
+					if (tempVolumeSet > 1.0f) {
+						tempVolumeSet = 1.0f;
+					}
+					myChuck.RunCode (tempVolumeSet + @" => Global.synthGain;");
+					Debug.Log ("changing the synth volume to  " + step1Script.volumeCount);
+					//hacked to be range of 0-10
+				}
 			}
 		}
 

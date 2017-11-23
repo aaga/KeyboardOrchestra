@@ -20,6 +20,8 @@ public class MyStepController : MonoBehaviour {
 	private GameObject currKeysBottom;
 	private bool pressTop;
 	private bool pressBottom;
+	public bool topDone;
+	public bool bottomDone;
 
 	private float initialTickerX;
 
@@ -81,6 +83,8 @@ public class MyStepController : MonoBehaviour {
 			//no keys pressed
 			pressTop = false;
 			pressBottom = false;
+			topDone = false;
+			bottomDone = false;
 		}
 
 		Vector3 temp = ticker.transform.position;
@@ -89,6 +93,12 @@ public class MyStepController : MonoBehaviour {
 
 		//do the interaction
 		getKey();
+
+		if (currLetter >= stepInstructions [1].Length && currLetter >= stepInstructions [2].Length) {
+			//Debug.Log ("FINISHED BOTH WORDS");
+			topDone = true;
+			bottomDone = true;
+		}
 
 	}
 
@@ -125,7 +135,6 @@ public class MyStepController : MonoBehaviour {
 				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
 					if (acceptableKeys [it, 0] == vKey.ToString ()) {
 						string letterToAdd = acceptableKeys [it, 1];
-						Debug.Log ("MOST IMPORTANT: " + letterToAdd);
 						if (currLetter < stepInstructions [1].Length) {
 							Debug.Log ("should be first char (h):" + letterToAdd);
 							if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
