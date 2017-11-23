@@ -156,6 +156,26 @@ public class ChuckInstance : MonoBehaviour {
 		return Chuck.Manager.GetFloat( myChuckId, variableName, callback );
 	}
 
+	public bool SetString( string variableName, System.String value )
+	{
+		return Chuck.Manager.SetString( myChuckId, variableName, value );
+	}
+
+	public Chuck.StringCallback CreateGetStringCallback( Action< System.String > callbackFunction )
+	{
+		return Chuck.CreateGetStringCallback( callbackFunction );
+	}
+
+	public bool GetString( string variableName, Chuck.StringCallback callback )
+	{
+		return Chuck.Manager.GetString( myChuckId, variableName, callback );
+	}
+
+	public Chuck.VoidCallback CreateVoidCallback( Action callbackFunction )
+	{
+		return Chuck.CreateVoidCallback( callbackFunction );
+	}
+
 	public bool SignalEvent( string variableName )
 	{
 		return Chuck.Manager.SignalEvent( myChuckId, variableName );
@@ -166,9 +186,29 @@ public class ChuckInstance : MonoBehaviour {
 		return Chuck.Manager.SignalEvent( myChuckId, variableName );
 	}
 
+	public bool ListenForChuckEventOnce( string variableName, Chuck.VoidCallback callback )
+	{
+		return Chuck.Manager.ListenForChuckEventOnce( myChuckId, variableName, callback );
+	}
+
+	public bool StartListeningForChuckEvent( string variableName, Chuck.VoidCallback callback )
+	{
+		return Chuck.Manager.StartListeningForChuckEvent( myChuckId, variableName, callback );
+	}
+
+	public bool StopListeningForChuckEvent( string variableName, Chuck.VoidCallback callback )
+	{
+		return Chuck.Manager.StopListeningForChuckEvent( myChuckId, variableName, callback );
+	}
+
 	public void SetRunning( bool shouldRun )
 	{
 		running = shouldRun;
+	}
+
+	public bool RunCodeWithReplacementDac( string code, string replacementDac )
+	{
+		return Chuck.Manager.RunCodeWithReplacementDac( myChuckId, code, replacementDac );
 	}
 
     private void OnDestroy()

@@ -6,10 +6,10 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, action type
 	private string[,,] specialWords = new string[,,] { 
-		{ { "Cue the synth", "synth", "", "greyOut" }, { "", "", "", ""} },
+		{ { "Cue the synth", "a", "synth", "greyOut" }, { "", "", "", ""} },
 		{ { "Add Bass Line", "b", "test", "greyOut"}, { "", "", "", ""} },
-		{ { "Type this Melody", "cc a d", "", "greyOut"}, { "", "", "", ""} },
-		{ { "Change the Bass Volume", ";;;;;;", "", "greyOut"}, { "", "", "", ""} },
+		{ { "Type this Melody", "", "cc a d", "greyOut"}, { "", "", "", ""} },
+		{ { "Change the Bass Volume", "", ";;;;;;", "greyOut"}, { "", "", "", ""} },
 		{ { "Waiting for next instruction...", "", "", "waiting"}, { "", "", "", ""} }
 	};
 
@@ -60,6 +60,12 @@ public class MainController : MonoBehaviour {
 			if (step1Script.bottomDone == true && step1Script.topDone == true) {
 				if (currRound == 0) {
 					myChuck.RunCode ("0.5 => Global.synthGain;");
+				}
+			}
+			/*
+			if (currRound == 0) {
+				myChuck.RunCode ("0.5 => Global.synthGain;");
+
 
 				} else if (currRound >= 1) {
 					myChuck.RunCode ("0.5 => Global.bassGain;");
@@ -78,6 +84,7 @@ public class MainController : MonoBehaviour {
 					//hacked to be range of 0-10
 				}
 			}
+			*/
 		}
 
 		if (myPos >= previousPos + 1.0f) {
@@ -115,7 +122,7 @@ public class MainController : MonoBehaviour {
 			    			static int synthMelody[];
 			    			static int bassMelody[];
 						}
-						4 => external float timeStep;
+						10 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {

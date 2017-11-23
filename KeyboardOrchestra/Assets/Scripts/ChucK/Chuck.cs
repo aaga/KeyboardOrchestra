@@ -104,6 +104,11 @@ public class Chuck
 		return runChuckCode( chuckId, code );
 	}
 
+	public bool RunCodeWithReplacementDac( System.UInt32 chuckId, string code, string replacementDac )
+	{
+		return runChuckCodeWithReplacementDac( chuckId, code, replacementDac );
+	}
+
 	public bool SetInt( string chuckName, string variableName, System.Int64 value )
 	{
 		if( ids.ContainsKey( chuckName ) )
@@ -202,6 +207,60 @@ public class Chuck
 		return true;
 	}
 
+	public bool SetString( string chuckName, string variableName, System.String value )
+	{
+		if( ids.ContainsKey( chuckName ) )
+		{
+			return SetString( ids[chuckName], variableName, value );
+		}
+		else
+		{
+			Debug.Log( chuckName + " has not been initialized as a ChucK instance" );
+			return false;
+		}
+	}
+
+	public bool SetString( System.UInt32 chuckId, string variableName, System.String value )
+	{
+		return setChuckString( chuckId, variableName, value );
+	}
+
+	public static Chuck.StringCallback CreateGetStringCallback( Action< System.String > callbackFunction )
+	{
+		return new StringCallback( callbackFunction );
+	}
+
+	public bool GetString( string chuckName, string variableName, Chuck.StringCallback callback )
+	{
+		if( ids.ContainsKey( chuckName ) )
+		{
+			return GetString( ids[chuckName], variableName, callback );
+		}
+		else
+		{
+			Debug.Log( chuckName + " has not been initialized as a ChucK instance" );
+			return false;
+		}
+	}
+
+	public bool GetString( System.UInt32 chuckId, string variableName, Chuck.StringCallback callback )
+	{
+		// save a copy of the delegate so it doesn't get garbage collected!
+		string internalKey = chuckId.ToString() + "$" + variableName;
+		stringCallbacks[internalKey] = callback;
+		// register the callback with ChucK
+		if( !getChuckString( chuckId, variableName, stringCallbacks[internalKey] ) )
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public static Chuck.VoidCallback CreateVoidCallback( Action callbackFunction )
+	{
+		return new VoidCallback( callbackFunction );
+	}
+
 	public bool SignalEvent( string chuckName, string variableName )
 	{
 		if( ids.ContainsKey( chuckName ) )
@@ -238,6 +297,75 @@ public class Chuck
 		return broadcastChuckEvent( chuckId, variableName );
 	}
 
+	public bool ListenForChuckEventOnce( string chuckName, string variableName, Chuck.VoidCallback callback )
+	{
+		if( ids.ContainsKey( chuckName ) )
+		{
+			return ListenForChuckEventOnce( ids[chuckName], variableName, callback );
+		}
+		else
+		{
+			Debug.Log( chuckName + " has not been initialized as a ChucK instance" );
+			return false;
+		}	
+	}
+
+	public bool ListenForChuckEventOnce( System.UInt32 chuckId, string variableName, Chuck.VoidCallback callback )
+	{
+		// save a copy of the delegate so it doesn't get garbage collected!
+		string internalKey = chuckId.ToString() + "$" + variableName;
+		voidCallbacks[internalKey] = callback;
+		return listenForChuckEventOnce( chuckId, variableName, callback );
+	}
+
+	public bool StartListeningForChuckEvent( string chuckName, string variableName, Chuck.VoidCallback callback )
+	{
+		if( ids.ContainsKey( chuckName ) )
+		{
+			return StartListeningForChuckEvent( ids[chuckName], variableName, callback );
+		}
+		else
+		{
+			Debug.Log( chuckName + " has not been initialized as a ChucK instance" );
+			return false;
+		}	
+	}
+
+	public bool StartListeningForChuckEvent( System.UInt32 chuckId, string variableName, Chuck.VoidCallback callback )
+	{
+		// save a copy of the delegate so it doesn't get garbage collected!
+		string internalKey = chuckId.ToString() + "$" + variableName;
+		voidCallbacks[internalKey] = callback;
+		return startListeningForChuckEvent( chuckId, variableName, callback );
+	}
+
+
+	public bool StopListeningForChuckEvent( string chuckName, string variableName, Chuck.VoidCallback callback )
+	{
+		if( ids.ContainsKey( chuckName ) )
+		{
+			return StopListeningForChuckEvent( ids[chuckName], variableName, callback );
+		}
+		else
+		{
+			Debug.Log( chuckName + " has not been initialized as a ChucK instance" );
+			return false;
+		}	
+	}
+
+	public bool StopListeningForChuckEvent( System.UInt32 chuckId, string variableName, Chuck.VoidCallback callback )
+	{
+		// Don't need to save the callback - it will not be called; only the value of its pointer will be checked
+		return stopListeningForChuckEvent( chuckId, variableName, callback );
+	}
+
+	public bool GetUGenSamples( System.UInt32 chuckID, System.String name,
+		float[] buffer, System.Int32 numSamples )
+	{
+		return getExternalUGenSamples( chuckID, name, buffer, numSamples );
+	}
+
+
 	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 	public delegate void MyLogCallback( System.String str );
 
@@ -245,7 +373,13 @@ public class Chuck
 	public delegate void IntCallback( System.Int64 i );
 
 	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+	public delegate void VoidCallback();
+
+	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 	public delegate void FloatCallback( double f );
+
+	[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
+	public delegate void StringCallback( System.String str );
 
 	private MyLogCallback chout_delegate;
 	private MyLogCallback cherr_delegate;
@@ -253,6 +387,8 @@ public class Chuck
 	private MyLogCallback stderr_delegate;
 	private Dictionary< string, IntCallback > intCallbacks;
 	private Dictionary< string, FloatCallback > floatCallbacks;
+	private Dictionary< string, StringCallback > stringCallbacks;
+	private Dictionary< string, VoidCallback > voidCallbacks;
 
 	const string PLUGIN_NAME = "AudioPluginChuck";
 
@@ -270,7 +406,14 @@ public class Chuck
 		System.UInt32 numFrames, System.UInt32 inChannels, System.UInt32 outChannels );
 
 	[DllImport (PLUGIN_NAME)]
+	private static extern bool getExternalUGenSamples( System.UInt32 chuckID, System.String name,
+		float[] buffer, System.Int32 numSamples );
+
+	[DllImport (PLUGIN_NAME)]
 	private static extern bool runChuckCode( System.UInt32 chuckID, System.String code );
+
+	[DllImport (PLUGIN_NAME)]
+	private static extern bool runChuckCodeWithReplacementDac( System.UInt32 chuckID, System.String code, System.String replacement_dac );
 
 	[DllImport (PLUGIN_NAME)]
 	private static extern bool setChuckInt( System.UInt32 chuckID, System.String name, System.Int64 val );
@@ -285,10 +428,25 @@ public class Chuck
 	private static extern bool getChuckFloat( System.UInt32 chuckID, System.String name, FloatCallback callback );
 
 	[DllImport (PLUGIN_NAME)]
+	private static extern bool setChuckString( System.UInt32 chuckID, System.String name, System.String val );
+
+	[DllImport (PLUGIN_NAME)]
+	private static extern bool getChuckString( System.UInt32 chuckID, System.String name, StringCallback callback );
+
+	[DllImport (PLUGIN_NAME)]
 	private static extern bool signalChuckEvent( System.UInt32 chuckID, System.String name );
 
 	[DllImport (PLUGIN_NAME)]
 	private static extern bool broadcastChuckEvent( System.UInt32 chuckID, System.String name );
+
+	[DllImport (PLUGIN_NAME)]
+	private static extern bool listenForChuckEventOnce( System.UInt32 chuckID, System.String name, VoidCallback callback );
+
+	[DllImport (PLUGIN_NAME)]
+	private static extern bool startListeningForChuckEvent( System.UInt32 chuckID, System.String name, VoidCallback callback );
+
+	[DllImport (PLUGIN_NAME)]
+	private static extern bool stopListeningForChuckEvent( System.UInt32 chuckID, System.String name, VoidCallback callback );
 
 	[DllImport (PLUGIN_NAME)]
 	private static extern bool setChoutCallback( System.UInt32 chuckID, MyLogCallback callback );
@@ -310,6 +468,8 @@ public class Chuck
 	private System.UInt32 _nextValidID;
 	private Dictionary< string, System.UInt32 > ids;
 
+    private static AudioMixer chuckMixer;
+
 	private Chuck()
 	{
 		// Store the location of data files
@@ -327,6 +487,8 @@ public class Chuck
 		// Store external ints -> callbacks to avoid garbage collection of callbacks
 		intCallbacks = new Dictionary< string, IntCallback >();
 		floatCallbacks = new Dictionary< string, FloatCallback >();
+		stringCallbacks = new Dictionary< string, StringCallback >();
+		voidCallbacks = new Dictionary< string, VoidCallback >();
 
 		// Create and store callbacks
 		chout_delegate = new MyLogCallback( ChoutCallback );
@@ -337,6 +499,9 @@ public class Chuck
 		// Store pointers to callbacks inside ChucK's inner workings
 		setStdoutCallback( stdout_delegate );
 		setStderrCallback( stderr_delegate );
+
+        // Load up the ChuckMixer
+        chuckMixer = Resources.Load("ChuckMixer") as AudioMixer;
 	}
 
 	public void Quit()
@@ -364,4 +529,9 @@ public class Chuck
 	{
 		Debug.LogError( str );
 	}
+
+    public static AudioMixerGroup FindAudioMixerGroup( string name )
+    {
+        return chuckMixer.FindMatchingGroups( name )[0];
+    }
 }
