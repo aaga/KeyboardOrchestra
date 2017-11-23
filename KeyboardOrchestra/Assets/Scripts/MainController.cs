@@ -113,7 +113,7 @@ public class MainController : MonoBehaviour {
 			    			static int synthMelody[];
 			    			static int bassMelody[];
 						}
-						4 => external float timeStep;
+						10 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
