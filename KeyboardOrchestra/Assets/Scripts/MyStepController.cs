@@ -23,6 +23,10 @@ public class MyStepController : MonoBehaviour {
 	public bool topDone;
 	public bool bottomDone;
 
+	private Color32 topColor;
+	private Color32 bottomColor;
+	private Color32 correctColor;
+
 	private float initialTickerX;
 
 	public string[] stepInstructions;
@@ -49,6 +53,10 @@ public class MyStepController : MonoBehaviour {
 		inputMesh = (TextMesh)inputText.GetComponent(typeof(TextMesh));
 		currLetter = 0;
 		linePos = 0.0f;
+
+		topColor = new Color32(48, 230, 169,255);
+		bottomColor = new Color32(63, 56, 255,255);
+		correctColor = new Color32 (56,224,101,255);
 
 		myChuck = GetComponent<ChuckInstance> ();
 		myGetIntCallback = Chuck.CreateGetIntCallback( GetIntCallback );
@@ -168,12 +176,12 @@ public class MyStepController : MonoBehaviour {
 			melodyString = "[]";
 			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
-				instructionMesh.text = stepInstructions [0];
+				//instructionMesh.text = stepInstructions [0];
+				instructionMesh.text = ResolveTextSize (stepInstructions [0], 45);
 				//inputMesh.text = stepInstructions [1];
 
-				addGraphicKeys (stepInstructions [1], 0f, currKeysTop,"top");
-				addGraphicKeys (stepInstructions [2], -4f, currKeysBottom,"bottom");
-
+				addGraphicKeys (stepInstructions [1], 6f, currKeysTop,"top");
+				addGraphicKeys (stepInstructions [2], -1f, currKeysBottom,"bottom");
 			}
 			newRound = false;
 
@@ -205,7 +213,7 @@ public class MyStepController : MonoBehaviour {
 			GameObject.Destroy(child.gameObject);
 		}
 
-		float startX = -14f;
+		float startX = -12f;
 		foreach (char c in inputWord)
 		{
 			GameObject newKey = (GameObject)Instantiate(Resources.Load("Default Key"));
@@ -214,13 +222,12 @@ public class MyStepController : MonoBehaviour {
 			//Debug.Log("new key created with text: ", newKeyText);
 			//Debug.Log (c);
 			newKey.transform.position = new Vector3 (startX, yPos, 3f);
-			startX += 3f;
+			startX += 7f;
 			newKey.transform.parent = currKeys.transform;
 			if (whichComputer == "top") {
-				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.blue;
+				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = topColor;
 			} else {
-				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = Color.cyan;
-
+				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
 			}
 		}
 
@@ -228,7 +235,6 @@ public class MyStepController : MonoBehaviour {
 
 	void doKeyDown(int it, bool thisKeyboard) {
 		string letterToAdd = acceptableKeys [it, 1];
-		//Debug.Log ("MOST IMPORTANT: " + letterToAdd);
 		if (currLetter < stepInstructions [1].Length && !thisKeyboard) {
 			//Debug.Log ("should be first char (h):" + letterToAdd);
 			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
@@ -250,18 +256,18 @@ public class MyStepController : MonoBehaviour {
 		if (pressTop && pressBottom) {
 			pressBottom = false;
 			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.green;
-			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = Color.green;
+			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
+			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
 		} else if (pressTop && currLetter >= stepInstructions [2].Length) {
 			pressBottom = false;
 			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.green;
+			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
 		} else if (pressBottom && currLetter >= stepInstructions [1].Length) {
 			pressBottom = false;
 			pressTop = false;
-			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = Color.green;
+			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
 		}
 	}
@@ -270,12 +276,12 @@ public class MyStepController : MonoBehaviour {
 		string letterToAdd = acceptableKeys [it, 1];
 		if (currLetter < stepInstructions [1].Length && letterToAdd [0] == stepInstructions [1] [currLetter] && !thisKeyboard) {
 			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.blue;
+			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = topColor;
 
 		}
 		if (currLetter < stepInstructions [2].Length && letterToAdd [0] == stepInstructions [2] [currLetter] && thisKeyboard) {
 			pressBottom = false;
-			currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.cyan;
+			currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = bottomColor;
 
 		}
 	}
@@ -315,6 +321,44 @@ public class MyStepController : MonoBehaviour {
 	void NewMessageReceived()
 	{
 		myChuck.GetInt ("messageReceived", myGetIntCallback);
+	}
+
+	// Wrap text  function
+	string ResolveTextSize(string input, int lineLength){
+
+		// Split string by char " "         
+		string[] words = input.Split(" "[0]);
+
+		// Prepare result
+		string result = "";
+
+		// Temp line string
+		string line = "";
+
+		// for each all words        
+		foreach(string s in words){
+			// Append current word into line
+			string temp = line + " " + s;
+
+			// If line length is bigger than lineLength
+			if(temp.Length > lineLength){
+
+				// Append current line into result
+				result += line + "\n";
+				// Remain word append into new line
+				line = s;
+			}
+			// Append current word into current line
+			else {
+				line = temp;
+			}
+		}
+
+		// Append last line into result        
+		result += line;
+
+		// Remove first " " char
+		return result.Substring(1,result.Length-1);
 	}
 
 }

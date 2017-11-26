@@ -6,21 +6,20 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, action type
 	private string[,,] specialWords = new string[,,] { 
-		{ { "Cue the synth", "a", "synth", "greyOut" }, { "", "", "", ""} },
-		{ { "Add Bass Line", "b", "test", "greyOut"}, { "", "", "", ""} },
-		{ { "Type this Melody", "", "cc a d", "greyOut"}, { "", "", "", ""} },
-		{ { "Change the Bass Volume", "", ";;;;;;", "greyOut"}, { "", "", "", ""} },
-		{ { "Waiting for next instruction...", "", "", "waiting"}, { "", "", "", ""} }
+		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "greyOut" }, { "", "", "", ""} },
+		{ { "You are player...", "", "one", "greyOut"}, {"Intro", "", "player two", "greyOut"} },
+		{ { "You can also play your partner's keyboard by pressing keys at the same time", "go", "team", "greyOut"}, { "", "", "", ""} },
+		{ { "Ready to get Started?", "", "ready", "greyOut"}, { "", "", "", ""} },
+		{ { "Waiting for next instruction...", "", "", "waiting"}, { "", "", "", ""} },
+		{ { "Cue the synth", "", "synth", "greyOut"}, { "", "", "", ""} }
 	};
 
 	public GameObject step1;
-	public GameObject step2;
 
 	ChuckInstance myChuck;
 	Chuck.FloatCallback myGetPosCallback;
 
 	private MyStepController step1Script;
-	private MyStepController step2Script;
 
 	private int currRound = 0;
 	private float myPos;
@@ -33,7 +32,6 @@ public class MainController : MonoBehaviour {
 		myPos = 0.0f;
 		previousPos = 0.0f;
 		step1Script = step1.GetComponent<MyStepController> ();
-		step2Script = step2.GetComponent<MyStepController> ();
 		myChuck = GetComponent<ChuckInstance> ();
 		myGetPosCallback = Chuck.CreateGetFloatCallback( GetPosCallback );
 	}
@@ -44,11 +42,8 @@ public class MainController : MonoBehaviour {
 		if (!updatedRound) {
 			//update
 			step1Script.stepInstructions = oneD(currRound,0);
-			step2Script.stepInstructions = oneD(currRound,1);
-			Debug.Log ("step 2 instruction set" + step2Script.stepInstructions[0]);
 			Debug.Log ("step 1 instruction set" + step1Script.stepInstructions[0]);
 			step1Script.newRound = true;
-			step2Script.newRound = true;
 			updatedRound = true;
 		}
 
@@ -96,9 +91,9 @@ public class MainController : MonoBehaviour {
 			}
 			Debug.Log ("Current Round: " + currRound);
 		}
+		float distanceMultiplier = 1.5f;
+		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
 
-		step1Script.linePos = myPos - previousPos;
-		step2Script.linePos = myPos - previousPos;
 	}
 
 	string[] oneD(int index1, int index2) {
@@ -122,7 +117,7 @@ public class MainController : MonoBehaviour {
 			    			static int synthMelody[];
 			    			static int bassMelody[];
 						}
-						10 => external float timeStep;
+						8 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
