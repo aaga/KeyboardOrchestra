@@ -12,11 +12,11 @@ public class MainController : MonoBehaviour {
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "Plug in the synth.","plug","in",""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.5 => Global.beatGain;0.4 => Global.synthGain;"} },
+		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.0 => Global.beatGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","key","",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof.", "roof", "", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
+		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
 		{ { "Pause the old Melody","pause","",@"0.0 => Global.synthGain2;"}, { "", "", "", "0.0 => Global.synthGain;"} },
-		{ { "Set a new second melody", "", "ceega", ""}, { "", "", "", ""} }
+		{ { "Set a new second melody", "", "pretty", "0.6 => Global.longSynthGain;"}, { "", "", "", ""} }
 	};
 
 	public GameObject step1;
@@ -59,6 +59,8 @@ public class MainController : MonoBehaviour {
 		myChuck.RunCode(@"
 						public class Global {
 							static float synthGain;
+							static float longSynthGain;
+
 							static float synthGain2;
 			    			static float bassGain;
 			    			static float beatGain;
@@ -67,6 +69,8 @@ public class MainController : MonoBehaviour {
 							static float introGain;
 
 			    			static int synthMelody[];
+			    			static int longSynthMelody[];
+
 			    			static int synthMelody2[];
 			    			static int bassMelody[];
 
@@ -92,11 +96,15 @@ public class MainController : MonoBehaviour {
 						}
 
 						[66,67,69,67] @=> Global.synthMelody;
+						[70,70,75,75,73,73,72,72] @=> Global.longSynthMelody;
+
 						[69,71,73,71] @=> Global.synthMelody2;
 						[50,50,57,57] @=> Global.bassMelody;
 
 
 						0 => Global.synthGain;
+						0 => Global.longSynthGain;
+
 						0 => Global.synthGain2;
 						0 => Global.bassGain;
 						0 => Global.beatGain;
@@ -104,12 +112,16 @@ public class MainController : MonoBehaviour {
 
 						SinOsc synth => ADSR e => Gain localSynthGain => dac;
 						SinOsc synth2 => Gain localSynthGain2 => dac;
+						SinOsc longSynth => Gain localLongSynthGain => dac;
+
 						SinOsc bass => Gain localBassGain => dac;
 						SinOsc beat => Gain localBeatGain => dac;
 						SinOsc offbeat => Gain localOffbeatGain => dac;
 
 
 						0 => synth.freq;
+						0 => longSynth.freq;
+
 						0 => synth2.freq;
 						0 => bass.freq;
 						0 => beat.freq;
@@ -164,6 +176,18 @@ public class MainController : MonoBehaviour {
 						            125::ms => now;
 						        }
 						    }
+						}
+
+						fun void playLongMelody() {
+							for (0 => int i; i < timeStep/2; i++) {
+							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
+							    {
+							        Global.longSynthMelody[x] => Std.mtof => longSynth.freq;
+							        125::ms => now;
+							        0 => longSynth.freq;
+							        125::ms => now;
+							    }
+							}
 						}
 						
 						fun void playBass() {
@@ -221,6 +245,8 @@ public class MainController : MonoBehaviour {
 						{
 							Global.synthGain => localSynthGain.gain;
 							Global.synthGain2 => localSynthGain2.gain;
+							Global.longSynthGain => localLongSynthGain.gain;
+
 
 							Global.bassGain => localBassGain.gain;
 							Global.introGain => localIntroGain.gain;
@@ -239,6 +265,8 @@ public class MainController : MonoBehaviour {
 							spork ~ playMelody();
 							spork ~ playBass();
 							spork ~ playMelody2();
+							spork ~ playLongMelody();
+
 							spork ~ playBeat();
 							spork ~ playOffbeat();
 							spork ~ playCorrect();
