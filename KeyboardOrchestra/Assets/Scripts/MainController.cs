@@ -17,7 +17,7 @@ public class MainController : MonoBehaviour {
 		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
 		{ { "Rebalance the gain"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
 		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "-----", "14763", "0.0 => Global.synthGain;"} },
-		{ { "Take a rest", "", "rest", "0.0 => Global.longSynthGain;"}, { "Take a rest", "", "rest", ""} },
+		{ { "Take a rest", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
 		{ { "End the piece", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "End the piece", "", "end", ""} }
 	};
 
@@ -80,7 +80,7 @@ public class MainController : MonoBehaviour {
 						external Event gotCorrect;
 						external Event startTicker;
 
-					 	4 => external float timeStep;
+					 	8 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
