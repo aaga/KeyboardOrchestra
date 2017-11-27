@@ -15,6 +15,9 @@ public class MainController : MonoBehaviour {
 	};
 
 	public GameObject step1;
+	public GameObject mainBackground;
+
+	public int playerNumber;
 
 	ChuckInstance myChuck;
 	Chuck.FloatCallback myGetPosCallback;
@@ -41,7 +44,7 @@ public class MainController : MonoBehaviour {
 		getKey ();
 		if (!updatedRound) {
 			//update
-			step1Script.stepInstructions = oneD(currRound,0);
+			step1Script.stepInstructions = oneD(currRound,playerNumber);
 			Debug.Log ("step 1 instruction set" + step1Script.stepInstructions[0]);
 			step1Script.newRound = true;
 			updatedRound = true;
@@ -93,6 +96,13 @@ public class MainController : MonoBehaviour {
 		}
 		float distanceMultiplier = 1.5f;
 		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
+
+		// Background updates when instructions are complete
+		if (step1Script.bottomDone == true && step1Script.topDone == true) {
+			mainBackground.GetComponent<Renderer> ().material.color = new Color32 (52, 201, 69, 255);
+		} else {
+			mainBackground.GetComponent<Renderer> ().material.color = new Color32 (63, 56, 255, 255);
+		}
 
 	}
 

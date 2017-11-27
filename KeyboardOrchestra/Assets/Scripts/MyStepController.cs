@@ -6,6 +6,10 @@ using System;
 
 public class MyStepController : MonoBehaviour {
 
+	public String otherIP;
+	public String sendingPort;
+	public String receivingPort;
+
 	private TextMesh instructionMesh;
 	private TextMesh inputMesh;
 //	private string[,] specialWords = new string[,] { { "VOID", "void"},{ "RETURN", "return"},{ "GE", "ge"},{ "=>", "chuck"}, {"TEST", "0"} , {"OOOO", "100"}};
@@ -88,9 +92,9 @@ public class MyStepController : MonoBehaviour {
 			external Event notifier;
 
 			// address of other computer
-			""localhost"" => string hostname;
+			""" + otherIP + @""" => string hostname;
 			// sending on port
-			6449 => int port;
+			" + sendingPort + @" => int port;
 
 			// check command line
 			//if( me.args() ) me.arg(0) => hostname;
@@ -114,8 +118,8 @@ public class MyStepController : MonoBehaviour {
 
 			// create our OSC receiver
 			OscRecv recv;
-			// use port 6439 (or whatever)
-			6449 => recv.port;
+			// receiving on port
+			" + receivingPort + @" => recv.port;
 			// start listening (launch thread)
 			recv.listen();
 

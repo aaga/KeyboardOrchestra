@@ -259,13 +259,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 529640913}
-  m_LocalRotation: {x: 0.012044607, y: -0.07140357, z: -0.99678934, w: -0.03416903}
-  m_LocalPosition: {x: -8.4, y: 0, z: 21.7}
+  m_LocalRotation: {x: -0.019720642, y: 0.008770178, z: 0.776655, w: 0.6295563}
+  m_LocalPosition: {x: -52.4, y: 4.7, z: 25.69}
   m_LocalScale: {x: 2.0617611, y: 1.2541516, z: 2.0617611}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -8.231, y: -1.108, z: -183.84698}
+  m_LocalEulerAnglesHint: {x: -177.796, y: -541.123, z: -78.035}
 --- !u!1001 &669458610
 Prefab:
   m_ObjectHideFlags: 0
@@ -383,7 +383,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4060187593631996, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4461693686013134, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_RootOrder
@@ -392,6 +392,21 @@ Prefab:
     - target: {fileID: 4484718359355706, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
+        type: 2}
+      propertyPath: otherIP
+      value: localhost
+      objectReference: {fileID: 0}
+    - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
+        type: 2}
+      propertyPath: sendingPort
+      value: 6449
+      objectReference: {fileID: 0}
+    - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
+        type: 2}
+      propertyPath: receivingPort
+      value: 6449
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6264fc19b3c80458898994baec620514, type: 2}
@@ -832,6 +847,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step1: {fileID: 959207080}
+  mainBackground: {fileID: 1654278203}
+  playerNumber: 0
 --- !u!4 &1333581976
 Transform:
   m_ObjectHideFlags: 0
