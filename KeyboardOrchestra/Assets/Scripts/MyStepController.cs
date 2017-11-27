@@ -221,7 +221,12 @@ public class MyStepController : MonoBehaviour {
 			newKeyText.text = c.ToString();
 			//Debug.Log("new key created with text: ", newKeyText);
 			//Debug.Log (c);
-			newKey.transform.position = new Vector3 (startX, yPos, 3f);
+			newKey.transform.position = new Vector3 (startX, yPos, -7f);
+			//make sure layering of objects is correct
+			newKey.transform.GetChild (0).transform.position = new Vector3 (newKey.transform.GetChild (0).transform.position.x, newKey.transform.GetChild (0).transform.position.y, -2f);
+			newKey.transform.GetChild (1).transform.position = new Vector3 (newKey.transform.GetChild (1).transform.position.x, newKey.transform.GetChild (1).transform.position.y, -1f);
+			newKey.transform.GetChild (2).transform.position = new Vector3 (newKey.transform.GetChild (2).transform.position.x, newKey.transform.GetChild (2).transform.position.y, 0f);
+
 			startX += 7f;
 			newKey.transform.parent = currKeys.transform;
 			if (whichComputer == "top") {
