@@ -14,7 +14,7 @@ public class MainController : MonoBehaviour {
 		{ { "Plug in the synth.","plug","in",""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
 		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.5 => Global.beatGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","key","",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof.", "roof", "", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;0.0 => Global.beatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;"} },
+		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
 		{ { "Pause the old Melody","pause","",@"0.0 => Global.synthGain2;"}, { "", "", "", "0.0 => Global.synthGain;"} },
 		{ { "Set a new second melody", "", "ceega", ""}, { "", "", "", ""} }
 	};
@@ -74,7 +74,7 @@ public class MainController : MonoBehaviour {
 						external Event gotCorrect;
 						external Event startTicker;
 
-					 	8 => external float timeStep;
+					 	4 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
@@ -172,7 +172,6 @@ public class MainController : MonoBehaviour {
 							    {
 							        Global.bassMelody[x] => Std.mtof => bass.freq;
 							        250::ms => now;
-
 							    }
 							}
 						}
@@ -180,18 +179,18 @@ public class MainController : MonoBehaviour {
 						fun void playBeat() {
 							for (0 => int i; i < timeStep*timeStep; i++) {
 						        52 => Std.mtof => beat.freq;
-						        63::ms => now;
+						        62.5::ms => now;
 						        0 => beat.freq;
-						        63::ms => now;
+						        62.5::ms => now;
 							}
 						}
 
 						fun void playOffbeat() {
 							for (0 => int i; i < timeStep*timeStep; i++) {
 						        0 => offbeat.freq;
-						        63::ms => now;
+						        62.5::ms => now;
 						        56 => Std.mtof => offbeat.freq;
-						        63::ms => now;
+						        62.5::ms => now;
 							}
 						}
 
@@ -310,175 +309,7 @@ public class MainController : MonoBehaviour {
 
 		return oneDArray;
 	}
-
-	void getKey(){
-		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
-			if (Input.GetKeyDown (vKey)) {					
-					myChuck.RunCode (@"
-						public class Global {
-							static float synthGain;
-							static float synthGain2;
-			    			static float bassGain;
-							static float introGain;
-
-			    			static int synthMelody[];
-			    			static int synthMelody2[];
-			    			static int bassMelody[];
-						}");
-
-					if (playerNumber == 0) {
-						myChuck.RunCode (@"
-						Gain localIntroGain;
-						.3 => Global.introGain;
-						.3 => localIntroGain.gain;");
-					} else {
-						myChuck.RunCode (@"
-						Gain localIntroGain;
-						0.0 => Global.introGain;
-						0.0 => localIntroGain.gain;");
-					}
-
-					myChuck.RunCode(@"
-						external Event gotCorrect;
-						external Event startTicker;
-
-					 	8 => external float timeStep;
-						external float pos;
-
-						fun void updatePos() {
-							timeStep::second => dur currentTimeStep;
-							currentTimeStep / 1000 => dur deltaTime;
-							now => time startTime;
-							
-							pos => float originalPos;
-											
-							while( now < startTime + currentTimeStep )
-							{
-								deltaTime / currentTimeStep +=> pos;
-								deltaTime => now;
-							}
-						}
-
-						[66,67,69,67] @=> Global.synthMelody;
-						[69,71,73,71] @=> Global.synthMelody2;
-						[50,50,57,57] @=> Global.bassMelody;
-
-
-						0 => Global.synthGain;
-						0 => Global.synthGain2;
-						0 => Global.bassGain;
-
-						SinOsc synth => ADSR e => Gain localSynthGain => dac;
-						SinOsc synth2 => Gain localSynthGain2 => dac;
-						SinOsc bass => Gain localBassGain => dac;
-						0 => synth.freq;
-						0 => synth2.freq;
-						0 => bass.freq;	
-
-						200::ms => e.attackTime;
-						100::ms => e.decayTime;
-						.5 => e.sustainLevel;
-						200::ms => e.releaseTime;
-						1 => e.keyOn;
-
-						//1 => int firstTime;
-
-						fun void playIntroMelody(){
-							// sound file
-							me.sourceDir() + ""IntroMusicShort.wav"" => string filename;
-							<<< filename >>>;
-							if( me.args() ) me.arg(0) => filename;						
-							// the patch 
-							SndBuf buf => localIntroGain => dac;
-							0 => buf.pos;
-
-							// load the file
-							filename => buf.read;
-
-							buf.length() => now;	
-						}
-	
-						fun void playMelody() {
-							for (0 => int i; i < timeStep; i++) {
-							    for (0 => int x; x < Global.synthMelody.cap(); x++)
-							    {
-							        Global.synthMelody[x] => Std.mtof => synth.freq;
-							        125::ms => now;
-							        0 => synth.freq;
-							        125::ms => now;
-							    }
-							}
-						}
-
-						fun void playMelody2() {
-						    for (0 => int i; i < timeStep; i++) {
-						        for (0 => int x; x < Global.synthMelody2.cap(); x++)
-						        {
-						            Global.synthMelody2[x] => Std.mtof => synth2.freq;
-						            125::ms => now;
-						            0 => synth2.freq;
-						            125::ms => now;
-						        }
-						    }
-						}
-						
-						fun void playBass() {
-							for (0 => int i; i < timeStep; i++) {
-							    for (0 => int x; x < Global.bassMelody.cap(); x++)
-							    {
-							        Global.bassMelody[x] => Std.mtof => bass.freq;
-							        250::ms => now;
-
-							    }
-							}
-						}
-
-					    TriOsc correct => Gain correctGain => dac;
-						.04 => correctGain.gain;
-						0 => correct.freq;
-
-						//play if they get a step correct
-						fun void playCorrect() {
-							gotCorrect => now;
-						    50 => Std.mtof => correct.freq;
-						    100::ms => now;
-						    53 => Std.mtof => correct.freq;
-						    100::ms => now;
-						    58 => Std.mtof => correct.freq;
-						    100::ms => now;
-							0 => correct.freq;
-						}
-
-						spork ~ playIntroMelody();
-						startTicker => now;
-								
-						while( true )
-						{
-							Global.synthGain => localSynthGain.gain;
-							Global.synthGain2 => localSynthGain2.gain;
-
-							Global.bassGain => localBassGain.gain;
-							Global.introGain => localIntroGain.gain;
-							spork ~ updatePos();
-
-							//ALL MUSIC PLAYS BELOW IN SEQUENCE
-
-							//if(firstTime == 1){
-							//	0 => firstTime;
-							//	spork ~ playIntroMelody();
-							//}
-
-							spork ~ playMelody();
-							spork ~ playBass();
-							spork ~ playMelody2();
-							spork ~ playCorrect();
-							50::ms => now; //delay to make playCorrect not trigger twice
-							timeStep::second => now;				
-						}
-					");
-			}
-		}
-	}
+		
 
 	void GetPosCallback( System.Double pos )
 	{
