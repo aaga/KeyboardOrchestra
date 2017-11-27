@@ -199,7 +199,7 @@ public class MyStepController : MonoBehaviour {
 		//do the interaction
 		getKey();
 
-		if (currLetter >= stepInstructions [1].Length && currLetter >= stepInstructions [2].Length) {
+		if (stepInstructions.Length > 0 && currLetter >= stepInstructions [1].Length && currLetter >= stepInstructions [2].Length) {
 			//Debug.Log ("FINISHED BOTH WORDS");
 			topDone = true;
 			bottomDone = true;
