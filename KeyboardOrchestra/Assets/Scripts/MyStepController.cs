@@ -58,7 +58,7 @@ public class MyStepController : MonoBehaviour {
 		currLetter = 0;
 		linePos = 0.0f;
 
-		topColor = new Color32(48, 230, 169,255);
+		topColor = new Color32(255, 56, 129,255);
 		bottomColor = new Color32(63, 56, 255,255);
 		correctColor = new Color32 (56,224,101,255);
 
@@ -203,7 +203,8 @@ public class MyStepController : MonoBehaviour {
 		//do the interaction
 		getKey();
 
-		if (stepInstructions.Length > 0 && currLetter >= stepInstructions [1].Length && currLetter >= stepInstructions [2].Length) {
+		//if received instrucitons, and both are completed, and both existed in the first place
+		if (stepInstructions.Length > 0 && currLetter >= stepInstructions [1].Length  && currLetter >= stepInstructions [2].Length) {
 			//Debug.Log ("FINISHED BOTH WORDS");
 			topDone = true;
 			bottomDone = true;

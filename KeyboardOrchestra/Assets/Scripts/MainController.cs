@@ -4,20 +4,19 @@ using UnityEngine;
 
 public class MainController : MonoBehaviour {
 
-	//Instruciton Text, input Text 1, input Text 2, action type
+	//Instruciton Text, input Text 1, input Text 2, chuck code
 	private string[,,] specialWords = new string[,,] { 
-		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "greyOut" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "greyOut" } },
-		{ { "You are player...", "", "one", "greyOut"}, { "You are player...", "", "two", "greyOut"} },
-		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", "greyOut"}, { "You can also play your partner's keyboard by pressing keys at the same time", "go", "team", "greyOut"} },
-		{ { "Ready to get Started?", "", "ready", "greyOut"}, {"Ready to get Started?", "", "ready", "greyOut"} },
-		{ { "Waiting for next instruction...", "", "", "waiting"}, { "Waiting for next instruction...", "", "", "waiting"} },
-		{ { "Lay down the bass", "", "bass", "greyOut"}, {"Waiting for next instruction...", "", "", "waiting"} },
-		{ { "Add the Synth Melody", "", "synth", "greyOut"}, { "Add the Synth Melody", "", "synth", "greyOut"} },
-		{ { "Add a harmony...", "", "now", "greyOut"}, {"Waiting for next instruction...", "", "", "waiting"} },
-		{ { "Raise the key","key","","greyOut"}, { "", "", "", ""} },
-		{ { "Lower the key back down","lower","","greyOut"}, { "", "", "", ""} },
-		{ { "Pause the Melody ","pause","","greyOut"}, { "", "", "", ""} },
-		{ { "Add a funky voice","funky","","greyOut"}, { "", "", "", ""} }
+		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
+		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
+		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", ""}, { "You can also play your partner's keyboard by pressing keys at the same time", "a", "team", "greyOut"} },
+		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
+		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", "waiting"} },
+		{ {"Waiting for next instruction...", "", "", "waiting"}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
+		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Waiting for next instruction...", "", "", "waiting"} },
+		{ { "Raise the key","key","",@"[67,68,70,68] @=> Global.synthMelody;[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "", ""} },
+		{ { "Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, { "", "", "", ""} },
+		{ { "Pause the Melody ","pause","",@"0.0 => Global.synthGain;0.0 => Global.synthGain2;"}, { "", "", "", ""} },
+		{ { "Add a funky voice","funky","",""}, { "", "", "", ""} }
 	};
 
 	public GameObject step1;
@@ -65,42 +64,20 @@ public class MainController : MonoBehaviour {
 		myChuck.GetFloat ("pos", myGetPosCallback);
 		//full loop has passed!!!
 		if (myPos >= previousPos + 0.95f) {
-
+			
+			//turn off elevator music after roudn 3 ALWAYS
+			if (currRound == 3) {
+				myChuck.RunCode ("0 => Global.introGain;");
+			}
 			//check if both steps done
 			if (step1Script.bottomDone == true && step1Script.topDone == true) {
-				if (currRound == 3) {
-					myChuck.RunCode ("0 => Global.introGain;");
-				}
-				myChuck.BroadcastEvent ("gotCorrect");
-				if (currRound == 5) {
-					myChuck.RunCode ("0.5 => Global.bassGain;");
-				}
-				if (currRound == 6) {
-					myChuck.RunCode ("0.7 => Global.synthGain;");
-				}
-				if (currRound == 7) {
-					myChuck.RunCode ("0.4 => Global.synthGain;");
-					myChuck.RunCode ("0.7 => Global.synthGain2;");
-				}
-				if (currRound == 8) {
-					myChuck.RunCode (@"[67,68,70,68] @=> Global.synthMelody;
-									[70,72,74,72] @=> Global.synthMelody2;
-									[51,51,58,58] @=> Global.bassMelody;");
-				}
-				if (currRound == 9) {
-					myChuck.RunCode (@"[66,67,69,67] @=> Global.synthMelody;
-									[69,71,73,71] @=> Global.synthMelody2;
-									[50,50,57,57] @=> Global.bassMelody;");
-				}
-				if (currRound == 10) {
-					myChuck.RunCode (@"0.0 => Global.synthGain;
-									0.0 => Global.synthGain2;");
-				}
-				if (currRound == 11) {
-					myChuck.RunCode (@"0 => Global.synthGain;
-									0 => Global.synthGain2;");
-				}
 
+				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
+				if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
+					myChuck.BroadcastEvent ("gotCorrect");
+					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
+
+				}
 			}
 		}
 
