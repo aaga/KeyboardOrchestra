@@ -8,11 +8,11 @@ public class MainController : MonoBehaviour {
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
-		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", ""}, { "You can also play your partner's keyboard by pressing keys at the same time", "a", "team", "greyOut"} },
+		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", ""}, { "You can also play your partner's keyboard by pressing keys at the same time", "a", "team", ""} },
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
-		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", "waiting"} },
-		{ {"Waiting for next instruction...", "", "", "waiting"}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Waiting for next instruction...", "", "", "waiting"} },
+		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ {"Waiting for next instruction...", "", "", ""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
+		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "Raise the key","key","",@"[67,68,70,68] @=> Global.synthMelody;[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "", ""} },
 		{ { "Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, { "", "", "", ""} },
 		{ { "Pause the Melody ","pause","",@"0.0 => Global.synthGain;0.0 => Global.synthGain2;"}, { "", "", "", ""} },
@@ -33,6 +33,7 @@ public class MainController : MonoBehaviour {
 	private float myPos;
 	private float previousPos;
 	private bool updatedRound;
+	private bool tickerStarted;
 
 	private Color32 correctColor;
 	private Color32 normalBackgroundColor;
@@ -40,6 +41,7 @@ public class MainController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		updatedRound = false;
+		tickerStarted = false;
 		myPos = 0.0f;
 		previousPos = 0.0f;
 		step1Script = step1.GetComponent<MyStepController> ();
@@ -48,75 +50,13 @@ public class MainController : MonoBehaviour {
 
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		getKey ();
-		if (!updatedRound) {
-			//update
-			step1Script.stepInstructions = oneD(currRound,playerNumber);
-			Debug.Log ("step 1 instruction set" + step1Script.stepInstructions[0]);
-			step1Script.newRound = true;
-			updatedRound = true;
-		}
-
-		myChuck.GetFloat ("pos", myGetPosCallback);
-		//full loop has passed!!!
-		if (myPos >= previousPos + 0.95f) {
-			
-			//turn off elevator music after roudn 3 ALWAYS
-			if (currRound == 3) {
-				myChuck.RunCode ("0 => Global.introGain;");
-			}
-			//check if both steps done
-			if (step1Script.bottomDone == true && step1Script.topDone == true) {
-
-				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
-				if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
-					myChuck.BroadcastEvent ("gotCorrect");
-					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
-
-				}
-			}
-		}
-
-		if (myPos >= previousPos + 1.0f) {
-			previousPos = previousPos + 1.0f;
-
-			if (currRound < specialWords.GetLength(0)) {
-				currRound++;
-				updatedRound = false;
-			}
-			Debug.Log ("Current Round: " + currRound);
-		}
-		float distanceMultiplier = 1.5f;
-		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
-
-		// Background updates when instructions are complete
-		if (step1Script.bottomDone == true && step1Script.topDone == true) {
-			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
+		string initialIntroGain;
+		if (playerNumber == 0) {
+			initialIntroGain = ".3";
 		} else {
-			mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+			initialIntroGain = "0.0";
 		}
-
-	}
-
-	string[] oneD(int index1, int index2) {
-		string[] oneDArray = new string[4];
-		oneDArray [0] = specialWords [index1, index2, 0];
-		oneDArray [1] = specialWords [index1, index2, 1];
-		oneDArray [2] = specialWords [index1, index2, 2];
-		oneDArray [3] = specialWords [index1, index2, 3];
-
-		return oneDArray;
-	}
-
-	void getKey(){
-		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
-			if (Input.GetKeyDown (vKey)) {
-				//if ("Return" == vKey.ToString ()) {
-					myChuck.RunCode (@"
+		myChuck.RunCode(@"
 						public class Global {
 							static float synthGain;
 							static float synthGain2;
@@ -127,8 +67,8 @@ public class MainController : MonoBehaviour {
 			    			static int synthMelody2[];
 			    			static int bassMelody[];
 						}
-
 						external Event gotCorrect;
+						external Event startTicker;
 
 					 	8 => external float timeStep;
 						external float pos;
@@ -170,9 +110,10 @@ public class MainController : MonoBehaviour {
 						1 => e.keyOn;
 
 						Gain localIntroGain;
-						.3 => Global.introGain;
-						.3 => localIntroGain.gain;
-						1 => int firstTime;
+						" + initialIntroGain + @" => Global.introGain;
+						" + initialIntroGain + @" => localIntroGain.gain;
+						//1 => int firstTime;
+
 						fun void playIntroMelody(){
 							// sound file
 							me.sourceDir() + ""IntroMusicShort.wav"" => string filename;
@@ -238,6 +179,9 @@ public class MainController : MonoBehaviour {
 						    100::ms => now;
 							0 => correct.freq;
 						}
+
+						spork ~ playIntroMelody();
+						startTicker => now;
 								
 						while( true )
 						{
@@ -249,10 +193,12 @@ public class MainController : MonoBehaviour {
 							spork ~ updatePos();
 
 							//ALL MUSIC PLAYS BELOW IN SEQUENCE
-							if(firstTime == 1){
-								0 => firstTime;
-								spork ~ playIntroMelody();
-							}
+
+							//if(firstTime == 1){
+							//	0 => firstTime;
+							//	spork ~ playIntroMelody();
+							//}
+
 							spork ~ playMelody();
 							spork ~ playBass();
 							spork ~ playMelody2();
@@ -261,8 +207,239 @@ public class MainController : MonoBehaviour {
 							timeStep::second => now;				
 						}
 					");
-				//}
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		//getKey ();
+		if (!updatedRound) {
+			//update
+			step1Script.stepInstructions = oneD(currRound,playerNumber);
+			Debug.Log ("step 1 instruction set" + step1Script.stepInstructions[0]);
+			step1Script.newRound = true;
+			updatedRound = true;
+		}
 
+		if (step1Script.startTheTicker && !tickerStarted) {
+			myChuck.BroadcastEvent ("startTicker");
+			tickerStarted = true;
+		}
+
+		myChuck.GetFloat ("pos", myGetPosCallback);
+		//full loop has passed!!!
+		if (myPos >= previousPos + 0.95f) {
+			
+			//turn off elevator music after roudn 3 ALWAYS
+			if (currRound == 2) {
+				myChuck.RunCode ("0 => Global.introGain;");
+			}
+			//check if both steps done
+			if (step1Script.bottomDone == true && step1Script.topDone == true) {
+
+				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
+				//if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
+					myChuck.BroadcastEvent ("gotCorrect");
+					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
+				//}
+			}
+		}
+
+		if (myPos >= previousPos + 1.0f) {
+			previousPos = previousPos + 1.0f;
+
+			if (currRound < specialWords.GetLength(0)) {
+				currRound++;
+				updatedRound = false;
+			}
+			Debug.Log ("Current Round: " + currRound);
+		}
+		float distanceMultiplier = 1.5f;
+		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
+
+		// Background updates when instructions are complete
+		if (step1Script.bottomDone == true && step1Script.topDone == true) {
+			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
+		} else {
+			mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+		}
+
+	}
+
+	string[] oneD(int index1, int index2) {
+		string[] oneDArray = new string[4];
+		oneDArray [0] = specialWords [index1, index2, 0];
+		oneDArray [1] = specialWords [index1, index2, 1];
+		oneDArray [2] = specialWords [index1, index2, 2];
+		oneDArray [3] = specialWords [index1, index2, 3];
+
+		return oneDArray;
+	}
+
+	void getKey(){
+		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
+			if (Input.GetKeyDown (vKey)) {					
+					myChuck.RunCode (@"
+						public class Global {
+							static float synthGain;
+							static float synthGain2;
+			    			static float bassGain;
+							static float introGain;
+
+			    			static int synthMelody[];
+			    			static int synthMelody2[];
+			    			static int bassMelody[];
+						}");
+
+					if (playerNumber == 0) {
+						myChuck.RunCode (@"
+						Gain localIntroGain;
+						.3 => Global.introGain;
+						.3 => localIntroGain.gain;");
+					} else {
+						myChuck.RunCode (@"
+						Gain localIntroGain;
+						0.0 => Global.introGain;
+						0.0 => localIntroGain.gain;");
+					}
+
+					myChuck.RunCode(@"
+						external Event gotCorrect;
+						external Event startTicker;
+
+					 	8 => external float timeStep;
+						external float pos;
+
+						fun void updatePos() {
+							timeStep::second => dur currentTimeStep;
+							currentTimeStep / 1000 => dur deltaTime;
+							now => time startTime;
+							
+							pos => float originalPos;
+											
+							while( now < startTime + currentTimeStep )
+							{
+								deltaTime / currentTimeStep +=> pos;
+								deltaTime => now;
+							}
+						}
+
+						[66,67,69,67] @=> Global.synthMelody;
+						[69,71,73,71] @=> Global.synthMelody2;
+						[50,50,57,57] @=> Global.bassMelody;
+
+
+						0 => Global.synthGain;
+						0 => Global.synthGain2;
+						0 => Global.bassGain;
+
+						SinOsc synth => ADSR e => Gain localSynthGain => dac;
+						SinOsc synth2 => Gain localSynthGain2 => dac;
+						SinOsc bass => Gain localBassGain => dac;
+						0 => synth.freq;
+						0 => synth2.freq;
+						0 => bass.freq;	
+
+						200::ms => e.attackTime;
+						100::ms => e.decayTime;
+						.5 => e.sustainLevel;
+						200::ms => e.releaseTime;
+						1 => e.keyOn;
+
+						//1 => int firstTime;
+
+						fun void playIntroMelody(){
+							// sound file
+							me.sourceDir() + ""IntroMusicShort.wav"" => string filename;
+							<<< filename >>>;
+							if( me.args() ) me.arg(0) => filename;						
+							// the patch 
+							SndBuf buf => localIntroGain => dac;
+							0 => buf.pos;
+
+							// load the file
+							filename => buf.read;
+
+							buf.length() => now;	
+						}
+	
+						fun void playMelody() {
+							for (0 => int i; i < timeStep; i++) {
+							    for (0 => int x; x < Global.synthMelody.cap(); x++)
+							    {
+							        Global.synthMelody[x] => Std.mtof => synth.freq;
+							        125::ms => now;
+							        0 => synth.freq;
+							        125::ms => now;
+							    }
+							}
+						}
+
+						fun void playMelody2() {
+						    for (0 => int i; i < timeStep; i++) {
+						        for (0 => int x; x < Global.synthMelody2.cap(); x++)
+						        {
+						            Global.synthMelody2[x] => Std.mtof => synth2.freq;
+						            125::ms => now;
+						            0 => synth2.freq;
+						            125::ms => now;
+						        }
+						    }
+						}
+						
+						fun void playBass() {
+							for (0 => int i; i < timeStep; i++) {
+							    for (0 => int x; x < Global.bassMelody.cap(); x++)
+							    {
+							        Global.bassMelody[x] => Std.mtof => bass.freq;
+							        250::ms => now;
+
+							    }
+							}
+						}
+
+					    TriOsc correct => Gain correctGain => dac;
+						.04 => correctGain.gain;
+						0 => correct.freq;
+
+						//play if they get a step correct
+						fun void playCorrect() {
+							gotCorrect => now;
+						    50 => Std.mtof => correct.freq;
+						    100::ms => now;
+						    53 => Std.mtof => correct.freq;
+						    100::ms => now;
+						    58 => Std.mtof => correct.freq;
+						    100::ms => now;
+							0 => correct.freq;
+						}
+
+						spork ~ playIntroMelody();
+						startTicker => now;
+								
+						while( true )
+						{
+							Global.synthGain => localSynthGain.gain;
+							Global.synthGain2 => localSynthGain2.gain;
+
+							Global.bassGain => localBassGain.gain;
+							Global.introGain => localIntroGain.gain;
+							spork ~ updatePos();
+
+							//ALL MUSIC PLAYS BELOW IN SEQUENCE
+
+							//if(firstTime == 1){
+							//	0 => firstTime;
+							//	spork ~ playIntroMelody();
+							//}
+
+							spork ~ playMelody();
+							spork ~ playBass();
+							spork ~ playMelody2();
+							spork ~ playCorrect();
+							50::ms => now; //delay to make playCorrect not trigger twice
+							timeStep::second => now;				
+						}
+					");
 			}
 		}
 	}

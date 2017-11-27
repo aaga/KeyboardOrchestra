@@ -26,6 +26,8 @@ public class MyStepController : MonoBehaviour {
 	private bool pressBottom;
 	public bool topDone;
 	public bool bottomDone;
+	private bool otherReady;
+	public bool startTheTicker;
 
 	private Color32 topColor;
 	private Color32 bottomColor;
@@ -53,6 +55,8 @@ public class MyStepController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		newRound = true;
+		otherReady = false;
+		startTheTicker = false;
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
 		inputMesh = (TextMesh)inputText.GetComponent(typeof(TextMesh));
 		currLetter = 0;
@@ -165,7 +169,9 @@ public class MyStepController : MonoBehaviour {
 	void Update () {
 
 		if (newMessage) {
-			if (message >= 100) {
+			if (message == 1000) {
+				otherReady = true;
+			} else if (message >= 100) {
 				doKeyDown (message - 100, false);
 			} else {
 				doKeyUp (message, false);
@@ -208,6 +214,13 @@ public class MyStepController : MonoBehaviour {
 			//Debug.Log ("FINISHED BOTH WORDS");
 			topDone = true;
 			bottomDone = true;
+			if (!startTheTicker) {
+				myChuck.SetInt ("messageToSend", 1000);
+				myChuck.BroadcastEvent ("sendMessage");
+			}
+			if (otherReady) {
+				startTheTicker = true;
+			}
 		}
 
 	}
