@@ -16,7 +16,7 @@ public class MainController : MonoBehaviour {
 		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.beatGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
 		{ { "Rebalance the gain"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
-		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "-----", "14763", "0.0 => Global.synthGain;"} },
+		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "----", "1357", "0.0 => Global.synthGain;"} },
 		{ { "Take a rest", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
 		{ { "End the piece", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "End the piece", "", "end", ""} }
 	};
@@ -181,11 +181,11 @@ public class MainController : MonoBehaviour {
 						}
 
 						fun void playLongMelody() {
-							for (0 => int i; i < timeStep/4; i++) {
+							for (0 => int i; i < timeStep/2; i++) {
 							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
 							    {
 							        Global.longSynthMelody[x] => Std.mtof => longSynth.freq;
-							        500::ms => now;
+							        250::ms => now;
 							    }
 							}
 						}
