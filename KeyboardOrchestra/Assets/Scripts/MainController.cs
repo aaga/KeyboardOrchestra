@@ -177,20 +177,24 @@ public class MainController : MonoBehaviour {
 						}
 
 						fun void playBeat() {
-							for (0 => int i; i < timeStep*timeStep; i++) {
-						        52 => Std.mtof => beat.freq;
-						        62.5::ms => now;
-						        0 => beat.freq;
-						        62.5::ms => now;
+							for (0 => int i; i < timeStep; i++) {
+								for(0 => int x; x < 8 ; x++){
+							        52 => Std.mtof => beat.freq;
+							        62.5::ms => now;
+							        0 => beat.freq;
+							        62.5::ms => now;
+								}
 							}
 						}
 
 						fun void playOffbeat() {
-							for (0 => int i; i < timeStep*timeStep; i++) {
-						        0 => offbeat.freq;
-						        62.5::ms => now;
-						        56 => Std.mtof => offbeat.freq;
-						        62.5::ms => now;
+							for (0 => int i; i < timeStep; i++) {
+								for(0 => int x; x < 8 ; x++){
+							        0 => offbeat.freq;
+							        62.5::ms => now;
+							        56 => Std.mtof => offbeat.freq;
+							        62.5::ms => now;
+								}	
 							}
 						}
 
