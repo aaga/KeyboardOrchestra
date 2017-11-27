@@ -12,10 +12,10 @@ public class MainController : MonoBehaviour {
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "Plug in the synth.","plug","in",""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.5 => Global.beatGain;"} },
-		{ { "Raise the key","key","",@"[67,68,70,68] @=> Global.synthMelody;[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof.", "roof", "", ""} },
-		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;0.0 => Global.beatGain;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"} },
-		{ { "Pause the old Melody","pause","",@"0.0 => Global.synthGain;0.0 => Global.synthGain2;"}, { "Set a new melody", "", "geeca", ""} },
+		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.5 => Global.beatGain;0.4 => Global.synthGain;"} },
+		{ { "Raise the key","key","",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof.", "roof", "", "[67,68,70,68] @=> Global.synthMelody;"} },
+		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;0.0 => Global.beatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;"} },
+		{ { "Pause the old Melody","pause","",@"0.0 => Global.synthGain2;"}, { "", "", "", "0.0 => Global.synthGain;"} },
 		{ { "Set a new second melody", "", "ceega", ""}, { "", "", "", ""} }
 	};
 
@@ -74,7 +74,7 @@ public class MainController : MonoBehaviour {
 						external Event gotCorrect;
 						external Event startTicker;
 
-					 	5 => external float timeStep;
+					 	8 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
@@ -270,14 +270,14 @@ public class MainController : MonoBehaviour {
 				myChuck.RunCode ("0 => Global.introGain;");
 			}
 			//check if both steps done
-			if (step1Script.bottomDone == true && step1Script.topDone == true) {
+			//if (step1Script.bottomDone == true && step1Script.topDone == true) {
 
 				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
 				//if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
 					myChuck.BroadcastEvent ("gotCorrect");
 					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
 				//}
-			}
+			//}
 		}
 
 		if (myPos >= previousPos + 1.0f) {
