@@ -8,15 +8,15 @@ public class MainController : MonoBehaviour {
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
-		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", ""}, { "You can also play your partner's keyboard by pressing keys at the same time", "a", "team", ""} },
+		{ { "You can also play your partner's keyboard by pressing keys at the same time to make...", "a", "team", ""}, { "You can also play your partner's keyboard by pressing keys at the same time", "b", "team", ""} },
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ {"Waiting for next instruction...", "", "", ""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "Raise the key","key","",@"[67,68,70,68] @=> Global.synthMelody;[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "", ""} },
-		{ { "Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, { "", "", "", ""} },
-		{ { "Pause the Melody ","pause","",@"0.0 => Global.synthGain;0.0 => Global.synthGain2;"}, { "", "", "", ""} },
-		{ { "Add a funky voice","funky","",""}, { "", "", "", ""} }
+		{ { "Plug in the synth.","plug","in",""}, { "Add the Synth Melody", "", "synth", "0.7 => Global.synthGain;"} },
+		{ { "Add a harmony...", "", "now", @"0.4 => Global.synthGain;0.6 => Global.synthGain2;"}, {"Add a beat!", ";", ";;;;;", "0.5 => Global.beatGain;"} },
+		{ { "Raise the key","key","",@"[67,68,70,68] @=> Global.synthMelody;[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof.", "roof", "", ""} },
+		{ { "Replace beats with OFFBEATS"," b ","b b",@"0.5 => Global.offbeatGain;0.0 => Global.beatGain;"}, {"Lower the key back down","lower","",@"[66,67,69,67] @=> Global.synthMelody;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"} },
+		{ { "Pause the old Melody","pause","",@"0.0 => Global.synthGain;0.0 => Global.synthGain2;"}, { "Set a new melody", "", "geeca", ""} },
+		{ { "Set a new second melody", "", "ceega", ""}, { "", "", "", ""} }
 	};
 
 	public GameObject step1;
@@ -61,16 +61,20 @@ public class MainController : MonoBehaviour {
 							static float synthGain;
 							static float synthGain2;
 			    			static float bassGain;
+			    			static float beatGain;
+			    			static float offbeatGain;
+
 							static float introGain;
 
 			    			static int synthMelody[];
 			    			static int synthMelody2[];
 			    			static int bassMelody[];
+
 						}
 						external Event gotCorrect;
 						external Event startTicker;
 
-					 	8 => external float timeStep;
+					 	5 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
@@ -95,13 +99,22 @@ public class MainController : MonoBehaviour {
 						0 => Global.synthGain;
 						0 => Global.synthGain2;
 						0 => Global.bassGain;
+						0 => Global.beatGain;
+						0 => Global.offbeatGain;
 
 						SinOsc synth => ADSR e => Gain localSynthGain => dac;
 						SinOsc synth2 => Gain localSynthGain2 => dac;
 						SinOsc bass => Gain localBassGain => dac;
+						SinOsc beat => Gain localBeatGain => dac;
+						SinOsc offbeat => Gain localOffbeatGain => dac;
+
+
 						0 => synth.freq;
 						0 => synth2.freq;
-						0 => bass.freq;	
+						0 => bass.freq;
+						0 => beat.freq;
+						0 => offbeat.freq;	
+	
 
 						200::ms => e.attackTime;
 						100::ms => e.decayTime;
@@ -164,6 +177,24 @@ public class MainController : MonoBehaviour {
 							}
 						}
 
+						fun void playBeat() {
+							for (0 => int i; i < timeStep*timeStep; i++) {
+						        52 => Std.mtof => beat.freq;
+						        63::ms => now;
+						        0 => beat.freq;
+						        63::ms => now;
+							}
+						}
+
+						fun void playOffbeat() {
+							for (0 => int i; i < timeStep*timeStep; i++) {
+						        0 => offbeat.freq;
+						        63::ms => now;
+						        56 => Std.mtof => offbeat.freq;
+						        63::ms => now;
+							}
+						}
+
 					    TriOsc correct => Gain correctGain => dac;
 						.04 => correctGain.gain;
 						0 => correct.freq;
@@ -190,6 +221,9 @@ public class MainController : MonoBehaviour {
 
 							Global.bassGain => localBassGain.gain;
 							Global.introGain => localIntroGain.gain;
+							Global.beatGain => localBeatGain.gain;
+							Global.offbeatGain => localOffbeatGain.gain;
+
 							spork ~ updatePos();
 
 							//ALL MUSIC PLAYS BELOW IN SEQUENCE
@@ -202,6 +236,8 @@ public class MainController : MonoBehaviour {
 							spork ~ playMelody();
 							spork ~ playBass();
 							spork ~ playMelody2();
+							spork ~ playBeat();
+							spork ~ playOffbeat();
 							spork ~ playCorrect();
 							50::ms => now; //delay to make playCorrect not trigger twice
 							timeStep::second => now;				

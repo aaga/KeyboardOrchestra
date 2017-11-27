@@ -383,7 +383,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4060187593631996, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4461693686013134, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_RootOrder
@@ -396,12 +396,12 @@ Prefab:
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}
       propertyPath: otherIP
-      value: localhost
+      value: 172.20.10.3
       objectReference: {fileID: 0}
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}
       propertyPath: sendingPort
-      value: 6449
+      value: 6439
       objectReference: {fileID: 0}
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}
@@ -856,7 +856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   step1: {fileID: 959207080}
   mainBackground: {fileID: 1654278203}
-  playerNumber: 0
+  playerNumber: 1
 --- !u!4 &1333581976
 Transform:
   m_ObjectHideFlags: 0
