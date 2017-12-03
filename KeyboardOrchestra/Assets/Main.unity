@@ -396,12 +396,12 @@ Prefab:
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}
       propertyPath: otherIP
-      value: 172.20.10.3
+      value: localhost
       objectReference: {fileID: 0}
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}
       propertyPath: sendingPort
-      value: 6439
+      value: 6449
       objectReference: {fileID: 0}
     - target: {fileID: 114981156367194188, guid: 6264fc19b3c80458898994baec620514,
         type: 2}

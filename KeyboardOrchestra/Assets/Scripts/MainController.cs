@@ -6,17 +6,17 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, chuck code
 	private string[,,] specialWords = new string[,,] { 
-		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
-		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
-		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
-		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
-		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
-		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "", "acec", "0.7 => Global.synthGain;"} },
+//		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
+//		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
+//		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
+//		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
+//		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
+//		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "a*a", "acec", "0.7 => Global.synthGain;"} },
 		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.beatGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
 		{ { "Rebalance the gain"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
-		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "----", "1357", "0.0 => Global.synthGain;"} },
+		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "---", "1357", "0.0 => Global.synthGain;"} },
 		{ { "Take a rest", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
 		{ { "End the piece", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "End the piece", "", "end", ""} }
 	};
@@ -160,6 +160,7 @@ public class MainController : MonoBehaviour {
 							for (0 => int i; i < timeStep; i++) {
 							    for (0 => int x; x < Global.synthMelody.cap(); x++)
 							    {
+									Global.synthGain => localSynthGain.gain;
 							        Global.synthMelody[x] => Std.mtof => synth.freq;
 							        125::ms => now;
 							        0 => synth.freq;
@@ -172,6 +173,7 @@ public class MainController : MonoBehaviour {
 						    for (0 => int i; i < timeStep; i++) {
 						        for (0 => int x; x < Global.synthMelody2.cap(); x++)
 						        {
+									Global.synthGain2 => localSynthGain2.gain;
 						            Global.synthMelody2[x] => Std.mtof => synth2.freq;
 						            125::ms => now;
 						            0 => synth2.freq;
@@ -184,6 +186,7 @@ public class MainController : MonoBehaviour {
 							for (0 => int i; i < timeStep/2; i++) {
 							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
 							    {
+									Global.longSynthGain => localLongSynthGain.gain;
 							        Global.longSynthMelody[x] => Std.mtof => longSynth.freq;
 							        250::ms => now;
 							    }
@@ -194,6 +197,7 @@ public class MainController : MonoBehaviour {
 							for (0 => int i; i < timeStep; i++) {
 							    for (0 => int x; x < Global.bassMelody.cap(); x++)
 							    {
+									Global.bassGain => localBassGain.gain;
 							        Global.bassMelody[x] => Std.mtof => bass.freq;
 							        250::ms => now;
 							    }
@@ -203,6 +207,7 @@ public class MainController : MonoBehaviour {
 						fun void playBeat() {
 							for (0 => int i; i < timeStep; i++) {
 								for(0 => int x; x < 8 ; x++){
+									Global.beatGain => localBeatGain.gain;
 							        69 => Std.mtof => beat.freq;
 							        (1000/6)::ms => now;
 							        0 => beat.freq;
@@ -214,6 +219,7 @@ public class MainController : MonoBehaviour {
 						fun void playOffbeat() {
 							for (0 => int i; i < timeStep; i++) {
 								for(0 => int x; x < 8 ; x++){
+									Global.offbeatGain => localOffbeatGain.gain;
 							        0 => offbeat.freq;
 							        62.5::ms => now;
 							        56 => Std.mtof => offbeat.freq;
@@ -243,15 +249,7 @@ public class MainController : MonoBehaviour {
 								
 						while( true )
 						{
-							Global.synthGain => localSynthGain.gain;
-							Global.synthGain2 => localSynthGain2.gain;
-							Global.longSynthGain => localLongSynthGain.gain;
-
-
-							Global.bassGain => localBassGain.gain;
 							Global.introGain => localIntroGain.gain;
-							Global.beatGain => localBeatGain.gain;
-							Global.offbeatGain => localOffbeatGain.gain;
 
 							spork ~ updatePos();
 
@@ -294,6 +292,15 @@ public class MainController : MonoBehaviour {
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
 		//full loop has passed!!!
+
+		//test code outside of finish ticker to see IMMEDIACY
+		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true) {
+
+			//sounds bad, may remove
+//			myChuck.BroadcastEvent ("gotCorrect");
+			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
+		}
+
 		if (myPos >= previousPos + 0.95f) {
 			
 			//turn off elevator music after roudn 3 ALWAYS
@@ -305,8 +312,8 @@ public class MainController : MonoBehaviour {
 
 				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
 				//if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
-					myChuck.BroadcastEvent ("gotCorrect");
-					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
+//					myChuck.BroadcastEvent ("gotCorrect");
+//					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
 				//}
 			//}
 		}

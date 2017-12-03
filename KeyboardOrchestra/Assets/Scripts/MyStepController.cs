@@ -234,24 +234,32 @@ public class MyStepController : MonoBehaviour {
 		float startX = -12f;
 		foreach (char c in inputWord)
 		{
-			GameObject newKey = (GameObject)Instantiate(Resources.Load("Default Key"));
-			TextMesh newKeyText = (TextMesh)newKey.transform.GetChild (0).GetComponent (typeof(TextMesh));
-			newKeyText.text = c.ToString();
-			//Debug.Log("new key created with text: ", newKeyText);
-			//Debug.Log (c);
-			newKey.transform.position = new Vector3 (startX, yPos, -7f);
-			//make sure layering of objects is correct
-			newKey.transform.GetChild (0).transform.position = new Vector3 (newKey.transform.GetChild (0).transform.position.x, newKey.transform.GetChild (0).transform.position.y, -2f);
-			newKey.transform.GetChild (1).transform.position = new Vector3 (newKey.transform.GetChild (1).transform.position.x, newKey.transform.GetChild (1).transform.position.y, -1f);
-			newKey.transform.GetChild (2).transform.position = new Vector3 (newKey.transform.GetChild (2).transform.position.x, newKey.transform.GetChild (2).transform.position.y, 0f);
+			if (c != '*') {
+				GameObject newKey = (GameObject)Instantiate (Resources.Load ("Default Key"));
+				TextMesh newKeyText = (TextMesh)newKey.transform.GetChild (0).GetComponent (typeof(TextMesh));
+				newKeyText.text = c.ToString ();
+
+				newKey.transform.position = new Vector3 (startX, yPos, -7f);
+				newKey.transform.GetChild (0).transform.position = new Vector3 (newKey.transform.GetChild (0).transform.position.x, newKey.transform.GetChild (0).transform.position.y, -2f);
+				newKey.transform.GetChild (1).transform.position = new Vector3 (newKey.transform.GetChild (1).transform.position.x, newKey.transform.GetChild (1).transform.position.y, -1f);
+				newKey.transform.GetChild (2).transform.position = new Vector3 (newKey.transform.GetChild (2).transform.position.x, newKey.transform.GetChild (2).transform.position.y, 0f);
+
+				newKey.transform.parent = currKeys.transform;
+			
+				if (whichComputer == "top") {
+					newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = topColor;
+				} else {
+					newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
+				}
+			} 
+			//need to add a fake gameobject to the parent to keep the numbering consistent
+			else {
+				GameObject newKey = new GameObject("NOTHING");
+				newKey.transform.parent = currKeys.transform;
+			}
 
 			startX += 7f;
-			newKey.transform.parent = currKeys.transform;
-			if (whichComputer == "top") {
-				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = topColor;
-			} else {
-				newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
-			}
+
 		}
 
 	}
@@ -260,34 +268,30 @@ public class MyStepController : MonoBehaviour {
 		string letterToAdd = acceptableKeys [it, 1];
 		if (currLetter < stepInstructions [1].Length && !thisKeyboard) {
 			//Debug.Log ("should be first char (h):" + letterToAdd);
-			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
+			if (letterToAdd [0] == stepInstructions [1] [currLetter] || stepInstructions [1] [currLetter] == '*') {
 				pressTop = true;
-				//new code to handle physical keys turning grey instead of turning text green
-				//backgorund of key
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 			}
 		}
 
 		if (currLetter < stepInstructions [2].Length && thisKeyboard) {
-			if (letterToAdd [0] == stepInstructions [2] [currLetter]) {
+			if (letterToAdd [0] == stepInstructions [2] [currLetter] || stepInstructions [2] [currLetter] == '*') {
 				pressBottom = true;
 				currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
-
 			}
 		}
-
 		if (pressTop && pressBottom) {
 			pressBottom = false;
 			pressTop = false;
 			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
 			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
-		} else if (pressTop && currLetter >= stepInstructions [2].Length) {
+		} else if (pressTop && (currLetter >= stepInstructions [2].Length || stepInstructions [2] [currLetter] == '*')) {
 			pressBottom = false;
 			pressTop = false;
 			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
-		} else if (pressBottom && currLetter >= stepInstructions [1].Length) {
+		} else if (pressBottom && (currLetter >= stepInstructions [1].Length || stepInstructions [1] [currLetter] == '*')) {
 			pressBottom = false;
 			pressTop = false;
 			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
