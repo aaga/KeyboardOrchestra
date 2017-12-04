@@ -6,16 +6,16 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, chuck code
 	private string[,,] specialWords = new string[,,] { 
-//		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
-//		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
-//		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
-//		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
-//		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
-//		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
+		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
+		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
+		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
+		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
+		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "d*a", "acec", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.beatGain;0.4 => Global.synthGain;"} },
+		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "Rebalance the gain"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
+		{ { "Rebalance the gain"," b ","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
 		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "---", "1357", "0.0 => Global.synthGain;"} },
 		{ { "Take a rest", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
 		{ { "End the piece", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "End the piece", "", "end", ""} }
@@ -25,6 +25,8 @@ public class MainController : MonoBehaviour {
 	public GameObject mainBackground;
 
 	public int playerNumber;
+
+	public int timestep;
 
 	ChuckInstance myChuck;
 	Chuck.FloatCallback myGetPosCallback;
@@ -57,6 +59,8 @@ public class MainController : MonoBehaviour {
 		currRound = 0;
 		staticLevel = 0;
 
+		timestep = 8;
+
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
 		failBackgroundColor = new Color32 (255, 64, 89, 255);
@@ -73,8 +77,7 @@ public class MainController : MonoBehaviour {
 
 							static float synthGain2;
 			    			static float bassGain;
-			    			static float beatGain;
-			    			static float offbeatGain;
+			    			static float tripletGain;
 
 							static float introGain;
 
@@ -90,7 +93,8 @@ public class MainController : MonoBehaviour {
 
 						external Event keyFailTrigger;
 
-					 	4 => external float timeStep;
+					 	8 => external int timeStep;
+						8.0 => float masterTimer;
 						external float pos;
 
 						fun void updatePos() {
@@ -99,7 +103,7 @@ public class MainController : MonoBehaviour {
 							now => time startTime;
 							
 							pos => float originalPos;
-											
+							<<<timeStep>>>;				
 							while( now < startTime + currentTimeStep )
 							{
 								deltaTime / currentTimeStep +=> pos;
@@ -113,31 +117,26 @@ public class MainController : MonoBehaviour {
 						[69,71,73,71] @=> Global.synthMelody2;
 						[50,50,57,57] @=> Global.bassMelody;
 
-
 						0 => Global.synthGain;
 						0 => Global.longSynthGain;
 
 						0 => Global.synthGain2;
 						0 => Global.bassGain;
-						0 => Global.beatGain;
-						0 => Global.offbeatGain;
+						0 => Global.tripletGain;
 
 						SinOsc synth => ADSR e => Gain localSynthGain => dac;
 						SinOsc synth2 => Gain localSynthGain2 => dac;
 						SinOsc longSynth => Gain localLongSynthGain => dac;
 
 						SinOsc bass => Gain localBassGain => dac;
-						SinOsc beat => Gain localBeatGain => dac;
-						SinOsc offbeat => Gain localOffbeatGain => dac;
+						SinOsc triplet => Gain localTripletGain => dac;
 
 						0 => synth.freq;
 						0 => longSynth.freq;
 
 						0 => synth2.freq;
 						0 => bass.freq;
-						0 => beat.freq;
-						0 => offbeat.freq;	
-	
+						0 => triplet.freq;	
 
 						200::ms => e.attackTime;
 						100::ms => e.decayTime;
@@ -161,79 +160,66 @@ public class MainController : MonoBehaviour {
 
 							// load the file
 							filename => buf.read;
-
 							buf.length() => now;	
 						}
 	
 						fun void playMelody() {
-							for (0 => int i; i < timeStep; i++) {
+							for (0 => int i; i < masterTimer; i++) {
 							    for (0 => int x; x < Global.synthMelody.cap(); x++)
 							    {
 									Global.synthGain => localSynthGain.gain;
 							        Global.synthMelody[x] => Std.mtof => synth.freq;
-							        125::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.synthMelody.cap()/2)::ms => now;
 							        0 => synth.freq;
-							        125::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.synthMelody.cap()/2)::ms => now;
 							    }
 							}
 						}
 
 						fun void playMelody2() {
-						    for (0 => int i; i < timeStep; i++) {
+						    for (0 => int i; i < masterTimer; i++) {
 						        for (0 => int x; x < Global.synthMelody2.cap(); x++)
 						        {
 									Global.synthGain2 => localSynthGain2.gain;
 						            Global.synthMelody2[x] => Std.mtof => synth2.freq;
-						            125::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.synthMelody2.cap()/2)::ms => now;
 						            0 => synth2.freq;
-						            125::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.synthMelody2.cap()/2)::ms => now;
 						        }
 						    }
 						}
 
 						fun void playLongMelody() {
-							for (0 => int i; i < timeStep/2; i++) {
+							for (0 => int i; i < masterTimer/2; i++) {
 							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
 							    {
 									Global.longSynthGain => localLongSynthGain.gain;
 							        Global.longSynthMelody[x] => Std.mtof => longSynth.freq;
-							        250::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.longSynthMelody.cap())::ms => now;
 							    }
 							}
 						}
 						
 						fun void playBass() {
-							for (0 => int i; i < timeStep; i++) {
+							for (0 => int i; i < masterTimer; i++) {
 							    for (0 => int x; x < Global.bassMelody.cap(); x++)
 							    {
 									Global.bassGain => localBassGain.gain;
 							        Global.bassMelody[x] => Std.mtof => bass.freq;
-							        250::ms => now;
+							        ((timeStep/masterTimer)*1000/Global.bassMelody.cap())::ms => now;
 							    }
 							}
 						}
 
-						fun void playBeat() {
-							for (0 => int i; i < timeStep; i++) {
-								for(0 => int x; x < 8 ; x++){
-									Global.beatGain => localBeatGain.gain;
-							        69 => Std.mtof => beat.freq;
-							        (1000/6)::ms => now;
-							        0 => beat.freq;
-							        (1000/6)::ms => now;
+						fun void playTriplet() {
+							for (0 => int i; i < masterTimer; i++) {
+								for(0 => int x; x < 3 ; x++){
+									Global.tripletGain => localTripletGain.gain;
+							        69 => Std.mtof => triplet.freq;
+							        ((timeStep/masterTimer)*1000/3/2)::ms => now;
+							        0 => triplet.freq;
+							        ((timeStep/masterTimer)*1000/3/2)::ms => now;
 								}
-							}
-						}
-
-						fun void playOffbeat() {
-							for (0 => int i; i < timeStep; i++) {
-								for(0 => int x; x < 8 ; x++){
-									Global.offbeatGain => localOffbeatGain.gain;
-							        0 => offbeat.freq;
-							        62.5::ms => now;
-							        56 => Std.mtof => offbeat.freq;
-							        62.5::ms => now;
-								}	
 							}
 						}
 
@@ -283,13 +269,14 @@ public class MainController : MonoBehaviour {
 							spork ~ playMelody2();
 							spork ~ playLongMelody();
 
-							spork ~ playBeat();
-							spork ~ playOffbeat();
+							spork ~ playTriplet();
 							spork ~ playCorrect();
 							50::ms => now; //delay to make playCorrect not trigger twice
 							timeStep::second => now;				
 						}
 					");
+		myChuck.SetInt ("timeStep", timestep);
+
 	}
 	
 	// Update is called once per frame
@@ -323,6 +310,8 @@ public class MainController : MonoBehaviour {
 			alreadyCorrect = false;
 			if (currRound == 3) {
 				myChuck.RunCode ("0 => Global.introGain;");
+				timestep--;
+				myChuck.SetInt ("timeStep", timestep);
 			}
 
 			if (step1Script.bottomDone != true || step1Script.topDone != true) {
@@ -347,7 +336,7 @@ public class MainController : MonoBehaviour {
 			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
 			//flash screen red if incorrect at end!
-			if (myPos >= previousPos + 0.98f) {
+			if (myPos >= previousPos + 0.96f) {
 				if (step1Script.bottomDone != true || step1Script.topDone != true) {
 					mainBackground.GetComponent<Renderer> ().material.color = failBackgroundColor;
 				}

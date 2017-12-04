@@ -253,9 +253,7 @@ public class MyStepController : MonoBehaviour {
 			melodyString = "[]";
 			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
-				//instructionMesh.text = stepInstructions [0];
-				instructionMesh.text = ResolveTextSize (stepInstructions [0], 45);
-				//inputMesh.text = stepInstructions [1];
+//				instructionMesh.text = ResolveTextSize (stepInstructions [0], 45);
 
 				addGraphicKeys (stepInstructions [1], 6f, currKeysTop,"top");
 				addGraphicKeys (stepInstructions [2], -1f, currKeysBottom,"bottom");
