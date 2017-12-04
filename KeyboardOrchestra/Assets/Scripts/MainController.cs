@@ -11,14 +11,14 @@ public class MainController : MonoBehaviour {
 		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
 		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
-		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "d*a", "acec", "0.7 => Global.synthGain;"} },
-		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
-		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "Rebalance the gain"," b ","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
-		{ { "Set the Synth Melody","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "Rewire the setup", "---", "1357", "0.0 => Global.synthGain;"} },
-		{ { "Take a rest", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
-		{ { "End the piece", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "End the piece", "", "end", ""} }
+		{ { "", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "","in","in",""}, { "", "d*a", "acec", "0.7 => Global.synthGain;"} },
+		{ { "", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"", ";;;", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
+		{ { "","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
+		{ { ""," b ","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
+		{ { "","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "---", "1357", "0.0 => Global.synthGain;"} },
+		{ { "", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
+		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
 	};
 
 	public GameObject step1;
@@ -156,7 +156,7 @@ public class MainController : MonoBehaviour {
 							while(tempGain >= 0.0){
 								tempGain - .01 => tempGain;
 								tempGain => localIntroGain.gain;
-								50::ms => now;
+								150::ms => now;
 							}
 						}
 
@@ -201,7 +201,7 @@ public class MainController : MonoBehaviour {
 						}
 
 						fun void playLongMelody() {
-							for (0 => int i; i < masterTimer/2; i++) {
+							for (0 => int i; i < masterTimer; i++) {
 							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
 							    {
 									Global.longSynthGain => localLongSynthGain.gain;
@@ -258,25 +258,12 @@ public class MainController : MonoBehaviour {
 							}
 						}
 
-//						fun void fadeIntro(){
-//							endIntroMusic => now;
-//							.5 => float tempGain;
-//							while(tempGain >= 0.0){
-//								tempGain - .1 => tempGain;
-//								tempGain => localIntroGain.gain;
-//								100::ms => now;
-//							}
-//						}
-//
-//						spork ~ fadeIntro();
 						spork ~ keyFailSound();
 						spork ~ playIntroMelody();
 						startTicker => now;
 								
 						while( true )
 						{
-//							Global.introGain => localIntroGain.gain;
-
 							spork ~ updatePos();
 
 							//ALL MUSIC PLAYS BELOW IN SEQUENCE
@@ -339,7 +326,7 @@ public class MainController : MonoBehaviour {
 //				myChuck.RunCode ("0 => Global.introGain;");
 			}
 			//make faster
-			if (currRound >= 4) {
+			if (currRound >= 5) {
 				if (currRound % 2 == 0) {
 					timestep--;
 					myChuck.SetInt ("timeStep", timestep);

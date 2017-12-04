@@ -438,7 +438,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1759700477298548, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1119791247431742, guid: 6264fc19b3c80458898994baec620514, type: 2}
       propertyPath: m_IsActive
@@ -499,6 +499,17 @@ Prefab:
       propertyPath: receivingPort
       value: 6449
       objectReference: {fileID: 0}
+    - target: {fileID: 102073202730093014, guid: 6264fc19b3c80458898994baec620514,
+        type: 2}
+      propertyPath: m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 49068d07a44494a9aa74d5d288da08c4,
+        type: 3}
+    - target: {fileID: 23920197057777774, guid: 6264fc19b3c80458898994baec620514,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 49068d07a44494a9aa74d5d288da08c4, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6264fc19b3c80458898994baec620514, type: 2}
   m_IsPrefabParent: 0
