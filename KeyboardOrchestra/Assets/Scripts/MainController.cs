@@ -120,7 +120,6 @@ public class MainController : MonoBehaviour {
 						SinOsc beat => Gain localBeatGain => dac;
 						SinOsc offbeat => Gain localOffbeatGain => dac;
 
-
 						0 => synth.freq;
 						0 => longSynth.freq;
 

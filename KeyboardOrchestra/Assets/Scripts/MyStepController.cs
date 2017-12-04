@@ -251,6 +251,7 @@ public class MyStepController : MonoBehaviour {
 				} else {
 					newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
 				}
+
 			} 
 			//need to add a fake gameobject to the parent to keep the numbering consistent
 			else {
