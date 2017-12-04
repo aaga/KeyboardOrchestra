@@ -93,6 +93,7 @@ public class MyStepController : MonoBehaviour {
 			@"
 			0 => external int messageToSend;
 			0 => external int messageReceived;
+			0.0 => external float staticGain;
 			external Event sendMessage;
 			external Event notifier;
 
@@ -100,6 +101,9 @@ public class MyStepController : MonoBehaviour {
 			external Event keyDownTrigger;
 			external Event keyUpTrigger;
 			external Event keyCorrectTrigger;
+
+			//event for static updated
+			external Event staticLevelUpdated;
 
 			// address of other computer
 			""" + otherIP + @""" => string hostname;
@@ -205,11 +209,22 @@ public class MyStepController : MonoBehaviour {
 					buf.length() => now;
 				}
 			}
+	
+			Noise n => Gain localStaticGain => dac;
+			0.0 => localStaticGain.gain;
+
+			fun void playStatic() {
+				while( true ) {
+					staticLevelUpdated => now;
+					staticGain => localStaticGain.gain;
+				}
+			}
 
 			spork ~ handleOSC();
 			spork ~ keyDownSound();
 			spork ~ keyUpSound();
 			spork ~ keyCorrectSound();
+			spork ~ playStatic();
 
 			while(true){
 				1::second => now;
@@ -230,6 +245,9 @@ public class MyStepController : MonoBehaviour {
 		for (int i = level; i < ticker.transform.childCount; i++) {
 			ticker.transform.GetChild (i).gameObject.SetActive (false);
 		}
+
+		myChuck.SetFloat ("staticGain", (float)level / (float) 50);
+		myChuck.BroadcastEvent ("staticLevelUpdated");
 	}
 
 	// Update is called once per frame

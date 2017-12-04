@@ -272,7 +272,7 @@ public class MainController : MonoBehaviour {
 							spork ~ playTriplet();
 							spork ~ playCorrect();
 							50::ms => now; //delay to make playCorrect not trigger twice
-							timeStep::second => now;				
+							timeStep::second => now;
 						}
 					");
 		myChuck.SetInt ("timeStep", timestep);
@@ -332,7 +332,7 @@ public class MainController : MonoBehaviour {
 		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
 
 		// Background updates when instructions are complete
-		if (step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
+		if (step1Script.bottomDone == true && step1Script.topDone == true) {
 			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
 			//flash screen red if incorrect at end!
