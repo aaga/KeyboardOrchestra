@@ -1189,7 +1189,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   step1: {fileID: 959207080}
   mainBackground: {fileID: 1654278203}
-  playerNumber: 1
+  playerNumber: 0
+  timestep: 0
 --- !u!4 &1333581976
 Transform:
   m_ObjectHideFlags: 0

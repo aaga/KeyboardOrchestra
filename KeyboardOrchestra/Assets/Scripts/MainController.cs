@@ -92,6 +92,7 @@ public class MainController : MonoBehaviour {
 						external Event startTicker;
 
 						external Event keyFailTrigger;
+						external Event endIntroMusic;
 
 					 	8 => external int timeStep;
 						8.0 => float masterTimer;
@@ -149,6 +150,16 @@ public class MainController : MonoBehaviour {
 						" + initialIntroGain + @" => localIntroGain.gain;
 						//1 => int firstTime;
 
+						fun void fadeIntro(){
+							endIntroMusic => now;
+							.5 => float tempGain;
+							while(tempGain >= 0.0){
+								tempGain - .01 => tempGain;
+								tempGain => localIntroGain.gain;
+								50::ms => now;
+							}
+						}
+
 						fun void playIntroMelody(){
 							// sound file
 							me.sourceDir() + ""IntroMusicShort.wav"" => string filename;
@@ -158,8 +169,8 @@ public class MainController : MonoBehaviour {
 							SndBuf buf => localIntroGain => dac;
 							0 => buf.pos;
 
-							// load the file
 							filename => buf.read;
+							spork ~ fadeIntro();
 							buf.length() => now;	
 						}
 	
@@ -247,13 +258,24 @@ public class MainController : MonoBehaviour {
 							}
 						}
 
+//						fun void fadeIntro(){
+//							endIntroMusic => now;
+//							.5 => float tempGain;
+//							while(tempGain >= 0.0){
+//								tempGain - .1 => tempGain;
+//								tempGain => localIntroGain.gain;
+//								100::ms => now;
+//							}
+//						}
+//
+//						spork ~ fadeIntro();
 						spork ~ keyFailSound();
 						spork ~ playIntroMelody();
 						startTicker => now;
 								
 						while( true )
 						{
-							Global.introGain => localIntroGain.gain;
+//							Global.introGain => localIntroGain.gain;
 
 							spork ~ updatePos();
 
@@ -308,10 +330,18 @@ public class MainController : MonoBehaviour {
 
 		if (myPos >= previousPos + 1.0f) {
 			alreadyCorrect = false;
+
+			//turn off intro music
 			if (currRound == 3) {
-				myChuck.RunCode ("0 => Global.introGain;");
-				timestep--;
-				myChuck.SetInt ("timeStep", timestep);
+				myChuck.BroadcastEvent ("endIntroMusic");
+//				myChuck.RunCode ("0 => Global.introGain;");
+			}
+			//make faster
+			if (currRound >= 4) {
+				if (currRound % 2 == 0) {
+					timestep--;
+					myChuck.SetInt ("timeStep", timestep);
+				}
 			}
 
 			if (step1Script.bottomDone != true || step1Script.topDone != true) {
@@ -332,7 +362,7 @@ public class MainController : MonoBehaviour {
 		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
 
 		// Background updates when instructions are complete
-		if (step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
+		if (step1Script.bottomDone == true && step1Script.topDone == true) {
 			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
 			//flash screen red if incorrect at end!
