@@ -332,6 +332,7 @@ public class MyStepController : MonoBehaviour {
 			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
 				pressTop = true;
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
+				currKeysTop.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
 			}
 		}
 
@@ -339,6 +340,7 @@ public class MyStepController : MonoBehaviour {
 			if (letterToAdd [0] == stepInstructions [2] [currLetter] || stepInstructions [2] [currLetter] == '*') {
 				pressBottom = true;
 				currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
+				currKeysBottom.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
 			}
 		}
 	}
@@ -385,10 +387,13 @@ public class MyStepController : MonoBehaviour {
 			if (currLetter < stepInstructions [1].Length && pressedLetter [0] == stepInstructions [1] [currLetter] && !thisKeyboard) {
 				pressTop = false;
 				currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = topColor;
+				currKeysTop.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().startRotations ();
 
 			} else if (currLetter < stepInstructions [2].Length && pressedLetter [0] == stepInstructions [2] [currLetter] && thisKeyboard) {
 				pressBottom = false;
 				currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
+				currKeysBottom.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().startRotations ();
+
 			}
 		}
 
