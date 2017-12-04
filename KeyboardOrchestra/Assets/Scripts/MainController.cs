@@ -333,7 +333,9 @@ public class MainController : MonoBehaviour {
 
 			//turn off intro music
 			if (currRound == 3) {
-				myChuck.BroadcastEvent ("endIntroMusic");
+				if (playerNumber == 0) {
+					myChuck.BroadcastEvent ("endIntroMusic");
+				}
 //				myChuck.RunCode ("0 => Global.introGain;");
 			}
 			//make faster
