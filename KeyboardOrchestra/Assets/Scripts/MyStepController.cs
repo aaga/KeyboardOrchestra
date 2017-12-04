@@ -238,8 +238,8 @@ public class MyStepController : MonoBehaviour {
 	}
 
 	public void updateStaticBar(int level) {
-		if (level > ticker.transform.childCount - 1) {
-			level = ticker.transform.childCount - 1;
+		if (level >= ticker.transform.childCount) {
+			level = ticker.transform.childCount;
 		}
 		for (int i = 0; i < level; i++) {
 			ticker.transform.GetChild (i).gameObject.SetActive (true);
