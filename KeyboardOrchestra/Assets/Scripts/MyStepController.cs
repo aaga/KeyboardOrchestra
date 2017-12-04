@@ -238,6 +238,9 @@ public class MyStepController : MonoBehaviour {
 	}
 
 	public void updateStaticBar(int level) {
+		if (level > ticker.transform.childCount - 1) {
+			level = ticker.transform.childCount - 1;
+		}
 		for (int i = 0; i < level; i++) {
 			ticker.transform.GetChild (i).gameObject.SetActive (true);
 		}
@@ -246,7 +249,7 @@ public class MyStepController : MonoBehaviour {
 			ticker.transform.GetChild (i).gameObject.SetActive (false);
 		}
 
-		myChuck.SetFloat ("staticGain", (float)level / (float) 50);
+		myChuck.SetFloat ("staticGain", (float)level / (float) 250);
 		myChuck.BroadcastEvent ("staticLevelUpdated");
 	}
 
