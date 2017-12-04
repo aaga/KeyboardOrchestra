@@ -12,7 +12,7 @@ public class MainController : MonoBehaviour {
 //		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
 //		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 //		{ { "Lay down the bass", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "a*a", "acec", "0.7 => Global.synthGain;"} },
+		{ { "Plug in the synth","in","in",""}, { "Set the Synth Melody", "d*a", "acec", "0.7 => Global.synthGain;"} },
 		{ { "Add a harmony", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"Add a triplet!", ";;;", "; ;", "0.3 => Global.beatGain;0.4 => Global.synthGain;"} },
 		{ { "Raise the key","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "Raise the roof", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
 		{ { "Rebalance the gain"," b ","b b",@"0.0 => Global.offbeatGain;[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"Lower the key back down","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.beatGain;"} },
@@ -227,20 +227,15 @@ public class MainController : MonoBehaviour {
 							}
 						}
 
-					    TriOsc correct => Gain correctGain => dac;
-						.07 => correctGain.gain;
-						0 => correct.freq;
-
 						//play if they get a step correct
 						fun void playCorrect() {
 							gotCorrect => now;
-						    50 => Std.mtof => correct.freq;
-						    100::ms => now;
-						    53 => Std.mtof => correct.freq;
-						    100::ms => now;
-						    58 => Std.mtof => correct.freq;
-						    100::ms => now;
-							0 => correct.freq;
+							me.sourceDir() + ""keyDown.wav"" => string filename;
+							if( me.args() ) me.arg(0) => filename;						
+							SndBuf buf => localIntroGain => dac;
+							0 => buf.pos;
+							filename => buf.read;
+							buf.length() => now;	
 						}
 
 						spork ~ playIntroMelody();
@@ -296,7 +291,6 @@ public class MainController : MonoBehaviour {
 		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true) {
 
 			//sounds bad, may remove
-//			myChuck.BroadcastEvent ("gotCorrect");
 			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 		}
 

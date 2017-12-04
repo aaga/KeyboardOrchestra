@@ -24,6 +24,7 @@ public class MyStepController : MonoBehaviour {
 	private GameObject currKeysBottom;
 	private bool pressTop;
 	private bool pressBottom;
+	private int doubleWhammy; // 0 is off, 1 is top already pressed, 2 is bottom already pressed
 	public bool topDone;
 	public bool bottomDone;
 	private bool otherReady;
@@ -95,6 +96,11 @@ public class MyStepController : MonoBehaviour {
 			external Event sendMessage;
 			external Event notifier;
 
+			//event for sound of key down and up
+			external Event keyDownTrigger;
+			external Event keyUpTrigger;
+			external Event keyCorrectTrigger;
+
 			// address of other computer
 			""" + otherIP + @""" => string hostname;
 			// sending on port
@@ -152,12 +158,63 @@ public class MyStepController : MonoBehaviour {
 
 			spork ~ receiveIntMessage();
 
-			// infinite time loop
-			while( true )
-			{
-    			sendMessage => now;
-    			spork ~ sendIntMessage(messageToSend);
+			fun void handleOSC(){
+				while( true )
+				{
+	    			sendMessage => now;
+	    			spork ~ sendIntMessage(messageToSend);
+
+				}
 			}
+
+			fun void keyDownSound(){
+				while( true )
+				{
+					keyDownTrigger => now;
+					me.sourceDir() + ""keyDown.wav"" => string filename;
+					if( me.args() ) me.arg(0) => filename;						
+					SndBuf buf => dac;
+					0 => buf.pos;
+					filename => buf.read;
+					buf.length() => now;
+				}
+			}
+
+			fun void keyUpSound(){
+				while( true )
+				{
+					keyUpTrigger => now;
+					me.sourceDir() + ""keyUp.wav"" => string filename;
+					if( me.args() ) me.arg(0) => filename;						
+					SndBuf buf => dac;
+					0 => buf.pos;
+					filename => buf.read;
+					buf.length() => now;
+				}
+			}
+
+			fun void keyCorrectSound(){
+				while( true )
+				{
+					keyCorrectTrigger => now;
+					me.sourceDir() + ""keyCorrect.wav"" => string filename;
+					if( me.args() ) me.arg(0) => filename;						
+					SndBuf buf => dac;
+					0 => buf.pos;
+					filename => buf.read;
+					buf.length() => now;
+				}
+			}
+
+			spork ~ handleOSC();
+			spork ~ keyDownSound();
+			spork ~ keyUpSound();
+			spork ~ keyCorrectSound();
+
+			while(true){
+				1::second => now;
+			}
+
 			"
 		);
 
@@ -251,7 +308,6 @@ public class MyStepController : MonoBehaviour {
 				} else {
 					newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
 				}
-
 			} 
 			//need to add a fake gameobject to the parent to keep the numbering consistent
 			else {
@@ -260,16 +316,20 @@ public class MyStepController : MonoBehaviour {
 			}
 
 			startX += 7f;
-
 		}
 
 	}
 
 	void doKeyDown(int it, bool thisKeyboard) {
 		string letterToAdd = acceptableKeys [it, 1];
+
+		if (thisKeyboard) {
+			myChuck.BroadcastEvent ("keyDownTrigger");
+		}
+
 		if (currLetter < stepInstructions [1].Length && !thisKeyboard) {
 			//Debug.Log ("should be first char (h):" + letterToAdd);
-			if (letterToAdd [0] == stepInstructions [1] [currLetter] || stepInstructions [1] [currLetter] == '*') {
+			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
 				pressTop = true;
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 			}
@@ -281,37 +341,58 @@ public class MyStepController : MonoBehaviour {
 				currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 			}
 		}
-		if (pressTop && pressBottom) {
+	}
+
+	void doKeyUp(int it, bool thisKeyboard) {
+		string pressedLetter = acceptableKeys [it, 1];
+
+		if (pressTop && (currLetter >= stepInstructions [2].Length || stepInstructions [2] [currLetter] == '*')) {
 			pressBottom = false;
 			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
-			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
+			currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
-		} else if (pressTop && (currLetter >= stepInstructions [2].Length || stepInstructions [2] [currLetter] == '*')) {
-			pressBottom = false;
-			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = correctColor;
-			currLetter++;
+			if (thisKeyboard) {
+				myChuck.BroadcastEvent ("keyCorrectTrigger");
+			}
 		} else if (pressBottom && (currLetter >= stepInstructions [1].Length || stepInstructions [1] [currLetter] == '*')) {
 			pressBottom = false;
 			pressTop = false;
 			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			currLetter++;
-		}
-	}
-
-	void doKeyUp(int it, bool thisKeyboard) {
-		string letterToAdd = acceptableKeys [it, 1];
-		if (currLetter < stepInstructions [1].Length && letterToAdd [0] == stepInstructions [1] [currLetter] && !thisKeyboard) {
-			pressTop = false;
-			currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = topColor;
-
-		}
-		if (currLetter < stepInstructions [2].Length && letterToAdd [0] == stepInstructions [2] [currLetter] && thisKeyboard) {
+			if (thisKeyboard) {
+				myChuck.BroadcastEvent ("keyCorrectTrigger");
+			}
+		} else if ((doubleWhammy == 1 && pressedLetter[0] == stepInstructions[2][currLetter]) ||
+				(doubleWhammy == 2 && pressedLetter[0] == stepInstructions[1][currLetter])) {
+			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
+			currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
 			pressBottom = false;
-			currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = bottomColor;
+			pressTop = false;
+			doubleWhammy = 0;
+			currLetter++;
+			myChuck.BroadcastEvent ("keyCorrectTrigger");
 
+		} else if (pressTop && pressBottom) {
+			if (pressedLetter [0] == stepInstructions [1] [currLetter]) {
+				doubleWhammy = 1;
+			} else {
+				doubleWhammy = 2;
+			}
+		} else {
+			if (thisKeyboard) {
+				myChuck.BroadcastEvent ("keyUpTrigger");
+			}
+			if (currLetter < stepInstructions [1].Length && pressedLetter [0] == stepInstructions [1] [currLetter] && !thisKeyboard) {
+				pressTop = false;
+				currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = topColor;
+
+			} else if (currLetter < stepInstructions [2].Length && pressedLetter [0] == stepInstructions [2] [currLetter] && thisKeyboard) {
+				pressBottom = false;
+				currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = bottomColor;
+			}
 		}
+
+
 	}
 
 	void getKey(){
