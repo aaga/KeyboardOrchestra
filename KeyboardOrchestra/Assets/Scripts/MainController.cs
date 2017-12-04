@@ -31,11 +31,13 @@ public class MainController : MonoBehaviour {
 
 	private MyStepController step1Script;
 
-	private int currRound = 0;
+	private int currRound;
 	private float myPos;
 	private float previousPos;
 	private bool updatedRound;
 	private bool tickerStarted;
+	private bool alreadyCorrect;
+	private int staticLevel;
 
 	private Color32 correctColor;
 	private Color32 normalBackgroundColor;
@@ -46,11 +48,14 @@ public class MainController : MonoBehaviour {
 	void Start () {
 		updatedRound = false;
 		tickerStarted = false;
+		alreadyCorrect = false;
 		myPos = 0.0f;
 		previousPos = 0.0f;
 		step1Script = step1.GetComponent<MyStepController> ();
 		myChuck = GetComponent<ChuckInstance> ();
 		myGetPosCallback = Chuck.CreateGetFloatCallback( GetPosCallback );
+		currRound = 0;
+		staticLevel = 0;
 
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
@@ -304,20 +309,27 @@ public class MainController : MonoBehaviour {
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
 
-		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true) {
+		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
 
 			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
+			if (staticLevel > 0) {
+				staticLevel--;
+			}
+			step1Script.updateStaticBar (staticLevel);
+			alreadyCorrect = true;
 		}
 
 		if (myPos >= previousPos + 1.0f) {
-			
+			alreadyCorrect = false;
 			if (currRound == 3) {
 				myChuck.RunCode ("0 => Global.introGain;");
 			}
 
 			if (step1Script.bottomDone != true || step1Script.topDone != true) {
 				myChuck.BroadcastEvent ("keyFailTrigger");
+				staticLevel++;
 			}
+			step1Script.updateStaticBar (staticLevel);
 
 			previousPos = previousPos + 1.0f;
 
@@ -331,7 +343,7 @@ public class MainController : MonoBehaviour {
 		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
 
 		// Background updates when instructions are complete
-		if (step1Script.bottomDone == true && step1Script.topDone == true) {
+		if (step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
 			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
 			//flash screen red if incorrect at end!
