@@ -222,6 +222,16 @@ public class MyStepController : MonoBehaviour {
 		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
 	}
 
+	public void updateStaticBar(int level) {
+		for (int i = 0; i < level; i++) {
+			ticker.transform.GetChild (i).gameObject.SetActive (true);
+		}
+
+		for (int i = level; i < ticker.transform.childCount; i++) {
+			ticker.transform.GetChild (i).gameObject.SetActive (false);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 
