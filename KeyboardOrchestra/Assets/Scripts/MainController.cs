@@ -39,6 +39,8 @@ public class MainController : MonoBehaviour {
 
 	private Color32 correctColor;
 	private Color32 normalBackgroundColor;
+	private Color32 failBackgroundColor;
+
 
 	// Use this for initialization
 	void Start () {
@@ -52,6 +54,7 @@ public class MainController : MonoBehaviour {
 
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
+		failBackgroundColor = new Color32 (255, 64, 89, 255);
 		string initialIntroGain;
 		if (playerNumber == 0) {
 			initialIntroGain = ".3";
@@ -80,7 +83,9 @@ public class MainController : MonoBehaviour {
 						external Event gotCorrect;
 						external Event startTicker;
 
-					 	8 => external float timeStep;
+						external Event keyFailTrigger;
+
+					 	4 => external float timeStep;
 						external float pos;
 
 						fun void updatePos() {
@@ -238,6 +243,20 @@ public class MainController : MonoBehaviour {
 							buf.length() => now;	
 						}
 
+						fun void keyFailSound(){
+							while( true )
+							{
+								keyFailTrigger => now;
+								me.sourceDir() + ""fail.wav"" => string filename;
+								if( me.args() ) me.arg(0) => filename;						
+								SndBuf buf => dac;
+								0 => buf.pos;
+								filename => buf.read;
+								buf.length() => now;
+							}
+						}
+
+						spork ~ keyFailSound();
 						spork ~ playIntroMelody();
 						startTicker => now;
 								
@@ -270,7 +289,6 @@ public class MainController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//getKey ();
 		if (!updatedRound) {
 			//update
 			step1Script.stepInstructions = oneD(currRound,playerNumber);
@@ -285,33 +303,22 @@ public class MainController : MonoBehaviour {
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
-		//full loop has passed!!!
 
-		//test code outside of finish ticker to see IMMEDIACY
 		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true) {
 
-			//sounds bad, may remove
 			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 		}
 
-		if (myPos >= previousPos + 0.95f) {
+		if (myPos >= previousPos + 1.0f) {
 			
-			//turn off elevator music after roudn 3 ALWAYS
 			if (currRound == 3) {
 				myChuck.RunCode ("0 => Global.introGain;");
 			}
-			//check if both steps done
-			//if (step1Script.bottomDone == true && step1Script.topDone == true) {
 
-				//check to only trigger new sounds in song if the current player actually had the step instructions to do so
-				//if (specialWords [currRound, playerNumber, 1].Length != 0 || specialWords [currRound, playerNumber, 2].Length != 0) {
-//					myChuck.BroadcastEvent ("gotCorrect");
-//					myChuck.RunCode(specialWords [currRound, playerNumber, 3]);
-				//}
-			//}
-		}
+			if (step1Script.bottomDone != true || step1Script.topDone != true) {
+				myChuck.BroadcastEvent ("keyFailTrigger");
+			}
 
-		if (myPos >= previousPos + 1.0f) {
 			previousPos = previousPos + 1.0f;
 
 			if (currRound < specialWords.GetLength(0)) {
@@ -327,7 +334,16 @@ public class MainController : MonoBehaviour {
 		if (step1Script.bottomDone == true && step1Script.topDone == true) {
 			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
-			mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+			//flash screen red if incorrect at end!
+			if (myPos >= previousPos + 0.98f) {
+				if (step1Script.bottomDone != true || step1Script.topDone != true) {
+					mainBackground.GetComponent<Renderer> ().material.color = failBackgroundColor;
+				}
+			} else {
+				
+				mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+			}
+					
 		}
 
 	}
