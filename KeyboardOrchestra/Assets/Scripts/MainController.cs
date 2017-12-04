@@ -17,7 +17,7 @@ public class MainController : MonoBehaviour {
 		{ { "","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
 		{ { ""," b ","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
 		{ { "","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "---", "1357", "0.0 => Global.synthGain;"} },
-		{ { "", "", "rest", ""}, { "Take a rest", "", "rest", ""} },
+		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
 		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
 	};
 
