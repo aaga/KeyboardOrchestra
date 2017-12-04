@@ -294,7 +294,7 @@ public class MainController : MonoBehaviour {
 							spork ~ playTriplet();
 							spork ~ playCorrect();
 							50::ms => now; //delay to make playCorrect not trigger twice
-							timeStep::second => now;				
+							timeStep::second => now;
 						}
 					");
 		myChuck.SetInt ("timeStep", timestep);
