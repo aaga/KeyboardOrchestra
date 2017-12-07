@@ -305,6 +305,7 @@ public class MainController : MonoBehaviour {
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
 
+		//USER IS DONE WITH STEP
 		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
 
 			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
@@ -313,6 +314,8 @@ public class MainController : MonoBehaviour {
 			}
 			step1Script.updateStaticBar (staticLevel);
 			alreadyCorrect = true;
+
+			previousPos = myPos - 1;
 		}
 
 		if (myPos >= previousPos + 1.0f) {
