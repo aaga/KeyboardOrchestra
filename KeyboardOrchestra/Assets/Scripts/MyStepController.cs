@@ -17,6 +17,7 @@ public class MyStepController : MonoBehaviour {
 //	public int presetButton;
 	public GameObject instructionText;
 	public GameObject inputText;
+
 	public GameObject ticker;
 	private int currLetter;
 
@@ -59,6 +60,7 @@ public class MyStepController : MonoBehaviour {
 		otherReady = false;
 		startTheTicker = false;
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
+
 		inputMesh = (TextMesh)inputText.GetComponent(typeof(TextMesh));
 		currLetter = 0;
 		linePos = 0.0f;
@@ -275,7 +277,6 @@ public class MyStepController : MonoBehaviour {
 			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
 				instructionMesh.text = ResolveTextSize (stepInstructions [0], 35);
-
 				addGraphicKeys (stepInstructions [1], 6f, currKeysTop,"top");
 				addGraphicKeys (stepInstructions [2], -1f, currKeysBottom,"bottom");
 			}

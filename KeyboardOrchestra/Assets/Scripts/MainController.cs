@@ -5,12 +5,14 @@ using UnityEngine;
 public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, chuck code
+	/*
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
 		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
 		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
+		
 		{ { "", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "","in","in",""}, { "", "d*a", "acec", "0.7 => Global.synthGain;"} },
 		{ { "", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"", ";;;", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
@@ -20,11 +22,53 @@ public class MainController : MonoBehaviour {
 		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
 		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
 	};
+	*/
+
+	private string[,,] specialWords = new string[,,] { 
+		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
+
+		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
+		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
+		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
+		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
+
+		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
+		{ { "", "", "hello", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "","","in",""}, { "", "", "acec", "0.7 => Global.synthGain;"} },
+		{ { "", "", "cefe", @"0.4 => Global.synthGain2;"}, {"", "", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
+		{ { "","","keyrd",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
+		{ { "","","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
+
+		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
+		{ { "","","gg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","**a","hip",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","*n*","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","","wow",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","0","good",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+
+		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
+		{ { "","0","holy",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","*aa","jeez",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","*nn","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","fun","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","**l","ok",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+
+		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
+		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
+	};
 
 	public GameObject step1;
 	public GameObject mainBackground;
 
+	public GameObject leftLevel;
+	private LevelController leftLevelScript;
+	public GameObject rightLevel;
+	private LevelController rightLevelScript;
+
 	public int playerNumber;
+
+	public GameObject levelText;
+	private TextMesh levelMesh;
 
 	public int timestep;
 
@@ -59,7 +103,13 @@ public class MainController : MonoBehaviour {
 		currRound = 0;
 		staticLevel = 0;
 
-		timestep = 8;
+		leftLevelScript = leftLevel.GetComponent<LevelController> ();
+		rightLevelScript = rightLevel.GetComponent<LevelController> ();
+
+		timestep = 4;
+
+		levelMesh = (TextMesh)levelText.GetComponent(typeof(TextMesh));
+
 
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
@@ -285,7 +335,6 @@ public class MainController : MonoBehaviour {
 						}
 					");
 		myChuck.SetInt ("timeStep", timestep);
-
 	}
 	
 	// Update is called once per frame
@@ -305,68 +354,90 @@ public class MainController : MonoBehaviour {
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
 
-		//USER IS DONE WITH STEP
-		if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
-
-			myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
-			if (staticLevel > 0) {
-				staticLevel--;
+		if (specialWords [currRound, playerNumber, 3] == "LEVEL") {
+			if (!leftLevelScript.closeDone) {
+				leftLevelScript.close = true;
 			}
-			step1Script.updateStaticBar (staticLevel);
-			alreadyCorrect = true;
-
-			previousPos = myPos - 1;
-		}
-
-		if (myPos >= previousPos + 1.0f) {
-			alreadyCorrect = false;
-
-			//turn off intro music
-			if (currRound == 3) {
-				if (playerNumber == 0) {
-					myChuck.BroadcastEvent ("endIntroMusic");
-				}
-//				myChuck.RunCode ("0 => Global.introGain;");
-			}
-			//make faster
-			if (currRound >= 5) {
-				if (currRound % 2 == 0) {
-					timestep--;
-					myChuck.SetInt ("timeStep", timestep);
-				}
-			}
-
-			if (step1Script.bottomDone != true || step1Script.topDone != true) {
-				myChuck.BroadcastEvent ("keyFailTrigger");
-				staticLevel++;
-			}
-			step1Script.updateStaticBar (staticLevel);
-
-			previousPos = previousPos + 1.0f;
-
-			if (currRound < specialWords.GetLength(0)) {
+			if (!rightLevelScript.closeDone) {
+				rightLevelScript.close = true;
+			}if(leftLevelScript.closeDone && rightLevelScript.closeDone){
+				leftLevelScript.open = true;
+				rightLevelScript.open = true;
+			}if (leftLevelScript.openDone && rightLevelScript.openDone) {
 				currRound++;
 				updatedRound = false;
+				leftLevelScript.closeDone = false;
+				rightLevelScript.closeDone = false;
 			}
-			Debug.Log ("Current Round: " + currRound);
-		}
-		float distanceMultiplier = 1.5f;
-		step1Script.linePos = (myPos - previousPos)*distanceMultiplier;
-
-		// Background updates when instructions are complete
-		if (step1Script.bottomDone == true && step1Script.topDone == true) {
-			mainBackground.GetComponent<Renderer> ().material.color = correctColor;
 		} else {
-			//flash screen red if incorrect at end!
-			if (myPos >= previousPos + 0.96f) {
-				if (step1Script.bottomDone != true || step1Script.topDone != true) {
-					mainBackground.GetComponent<Renderer> ().material.color = failBackgroundColor;
+
+
+			//USER IS DONE WITH STEP
+			if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
+
+				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
+					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 				}
-			} else {
-				
-				mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+				if (staticLevel > 0) {
+					staticLevel--;
+				}
+				step1Script.updateStaticBar (staticLevel);
+				alreadyCorrect = true;
+
+				previousPos = myPos - 1;
 			}
+
+			if (myPos >= previousPos + 1.0f) {
+				alreadyCorrect = false;
+
+				//turn off intro music
+				if (currRound == 3) {
+					if (playerNumber == 0) {
+						myChuck.BroadcastEvent ("endIntroMusic");
+					}
+					//				myChuck.RunCode ("0 => Global.introGain;");
+				}
+				//make faster
+				if (currRound >= 5) {
+					if (currRound % 2 == 0) {
+						//timestep--;
+						//myChuck.SetInt ("timeStep", timestep);
+					}
+				}
+
+				if (step1Script.bottomDone != true || step1Script.topDone != true) {
+					myChuck.BroadcastEvent ("keyFailTrigger");
+					staticLevel++;
+				}
+				step1Script.updateStaticBar (staticLevel);
+
+				previousPos = previousPos + 1.0f;
+
+				if (currRound < specialWords.GetLength (0)) {
+					int currLevelText = currRound / 5;
+					levelMesh.text = currLevelText.ToString();
+					currRound++;
+					updatedRound = false;
+				}
+				Debug.Log ("Current Round: " + currRound);
+			}
+			float distanceMultiplier = 1.5f;
+			step1Script.linePos = (myPos - previousPos) * distanceMultiplier;
+
+			// Background updates when instructions are complete
+			if (step1Script.bottomDone == true && step1Script.topDone == true) {
+				mainBackground.GetComponent<Renderer> ().material.color = correctColor;
+			} else {
+				//flash screen red if incorrect at end!
+				if (myPos >= previousPos + 0.96f) {
+					if (step1Script.bottomDone != true || step1Script.topDone != true) {
+						mainBackground.GetComponent<Renderer> ().material.color = failBackgroundColor;
+					}
+				} else {
 					
+					mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+				}
+			}
 		}
 
 	}
