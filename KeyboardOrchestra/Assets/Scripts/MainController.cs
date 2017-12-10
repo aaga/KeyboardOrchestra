@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MainController : MonoBehaviour {
 
-	//Instruciton Text, input Text 1, input Text 2, chuck code
+	//Instruciton Text, input Text 1, input Text 2 (* signals no key placed at that location), chuck code (LEVEL is a code to trigger a new level animation)
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
 
@@ -41,15 +41,16 @@ public class MainController : MonoBehaviour {
 	public GameObject step1;
 	public GameObject mainBackground;
 
+	//Level Animation Objects and scripts
 	public GameObject leftLevel;
 	private LevelController leftLevelScript;
 	public GameObject rightLevel;
 	private LevelController rightLevelScript;
-
-	public int playerNumber;
-
 	public GameObject levelText;
 	private TextMesh levelMesh;
+	private bool levelAnimationDone;
+
+	public int playerNumber;
 
 	public int timestep;
 
@@ -58,8 +59,7 @@ public class MainController : MonoBehaviour {
 
 	private MyStepController step1Script;
 
-	private bool levelAnimationDone;
-
+	//Ticker
 	private int currRound;
 	private float myPos;
 	private float previousPos;
@@ -68,12 +68,13 @@ public class MainController : MonoBehaviour {
 	private bool alreadyCorrect;
 	private int staticLevel;
 
+	//ALL colors
 	private Color32 correctColor;
 	private Color32 normalBackgroundColor;
 	private Color32 failBackgroundColor;
 
 
-	// Use this for initialization
+	// Initialization
 	void Start () {
 		updatedRound = false;
 		tickerStarted = false;
@@ -93,10 +94,11 @@ public class MainController : MonoBehaviour {
 
 		levelMesh = (TextMesh)levelText.GetComponent(typeof(TextMesh));
 
-
+		//set colors
 		correctColor = new Color32 (56,224,101,255);
 		normalBackgroundColor = new Color32 (63, 56, 255, 255);
 		failBackgroundColor = new Color32 (255, 64, 89, 255);
+
 		string initialIntroGain;
 		if (playerNumber == 0) {
 			initialIntroGain = ".3";
@@ -320,22 +322,26 @@ public class MainController : MonoBehaviour {
 		myChuck.SetInt ("timeStep", timestep);
 	}
 	
-	// Update is called once per frame
+	//RUN EVERY FRAME
 	void Update () {
+
+		//UPDATE SCREEN EACH ROUND
 		if (!updatedRound) {
-			//update
 			step1Script.stepInstructions = oneD(currRound,playerNumber);
 			Debug.Log ("step 1 instruction set" + step1Script.stepInstructions[0]);
 			step1Script.newRound = true;
 			updatedRound = true;
 		}
 
+		//START TICKER
 		if (step1Script.startTheTicker && !tickerStarted) {
 			myChuck.BroadcastEvent ("startTicker");
 			tickerStarted = true;
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
+
+		//TRIGGER NEW LEVEL ANIMATION
 		if (specialWords [currRound, playerNumber, 3] == "LEVEL") {
 
 			if (!leftLevelScript.doneAnimation && !rightLevelScript.doneAnimation) {
@@ -360,12 +366,14 @@ public class MainController : MonoBehaviour {
 			}
 		} else {
 
-			//USER IS DONE WITH STEP
+			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
 			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
 
 				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
 					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 				}
+
+				//REWARD BY DECREASING STATIC
 				if (staticLevel > 0) {
 					staticLevel--;
 				}
@@ -384,9 +392,9 @@ public class MainController : MonoBehaviour {
 					if (playerNumber == 0) {
 						myChuck.BroadcastEvent ("endIntroMusic");
 					}
-					//				myChuck.RunCode ("0 => Global.introGain;");
 				}
-				//make faster
+
+				//increase speed
 				if (currRound >= 5) {
 					if (currRound % 2 == 0) {
 						//timestep--;
@@ -394,6 +402,7 @@ public class MainController : MonoBehaviour {
 					}
 				}
 
+				//user got it wrong
 				if (step1Script.bottomDone != true || step1Script.topDone != true) {
 					myChuck.BroadcastEvent ("keyFailTrigger");
 					staticLevel++;
@@ -402,6 +411,7 @@ public class MainController : MonoBehaviour {
 
 				previousPos = previousPos + 1.0f;
 
+				//move on to next round
 				if (currRound < specialWords.GetLength (0) && !levelAnimationDone) {
 					currRound++;
 					int currLevelText = currRound / 5;

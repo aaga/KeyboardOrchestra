@@ -49,6 +49,7 @@ public class LevelController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		//RUN FULL OPEN & CLOSE ANIMATION HERE
 		if (startAnimation) {
 			if (!closeDone) {
 				close = true;
@@ -64,6 +65,7 @@ public class LevelController : MonoBehaviour {
 			}
 		}
 
+		//LOOPS WHILE CLOSING LEVEL "DOORS
 		if (close) {
 			closeDone = false;
 			partner.SetActive (false);
@@ -86,6 +88,8 @@ public class LevelController : MonoBehaviour {
 				levelText.SetActive (true);
 			}
 		}
+
+		//LOOPS WHILE OPENING LEVEL "DOORS
 		if (open) {
 			openDone = false;
 			float goalRightPosition = 86.2f;

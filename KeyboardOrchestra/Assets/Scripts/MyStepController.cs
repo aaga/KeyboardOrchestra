@@ -41,9 +41,6 @@ public class MyStepController : MonoBehaviour {
 	public bool newRound;
 	public float linePos;
 
-	//created melody text
-	public string melodyString;
-
 	public float volumeCount;
 
 	// ChucK instance
@@ -235,10 +232,10 @@ public class MyStepController : MonoBehaviour {
 			"
 		);
 
-
 		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
 	}
 
+	//Change the amount of Red (punishment) on ticker
 	public void updateStaticBar(int level) {
 		if (level >= ticker.transform.childCount) {
 			level = ticker.transform.childCount;
@@ -255,7 +252,7 @@ public class MyStepController : MonoBehaviour {
 		myChuck.BroadcastEvent ("staticLevelUpdated");
 	}
 
-	// Update is called once per frame
+	//RUN ONCE EVERY FRAME
 	void Update () {
 
 		if (newMessage) {
@@ -269,11 +266,10 @@ public class MyStepController : MonoBehaviour {
 			newMessage = false;
 		}
 
-		//change steps to have correct initial state
+		//show new display instructions each round
 		if (newRound) {
 			currLetter = 0;
-			//initialize empty melody array
-			melodyString = "[]";
+
 			volumeCount = 0;
 			if (stepInstructions.GetLength (0) != 0) {
 				instructionMesh.text = ResolveTextSize (stepInstructions [0], 35);
@@ -312,6 +308,7 @@ public class MyStepController : MonoBehaviour {
 
 	}
 
+	//Create a visual key for each letter in the instructions
 	void addGraphicKeys(string inputWord, float yPos, GameObject currKeys, string whichComputer){
 		//add all new key instructions
 		foreach (Transform child in currKeys.transform) {
@@ -321,6 +318,7 @@ public class MyStepController : MonoBehaviour {
 		float startX = -12f;
 		foreach (char c in inputWord)
 		{
+			//"*" is code word to use for no actual key in a place
 			if (c != '*') {
 				GameObject newKey = (GameObject)Instantiate (Resources.Load ("Default Key"));
 				TextMesh newKeyText = (TextMesh)newKey.transform.GetChild (0).GetComponent (typeof(TextMesh));
@@ -350,6 +348,33 @@ public class MyStepController : MonoBehaviour {
 
 	}
 
+	//GET ACTUAL KEY PRESSED
+	void getKey(){
+		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
+			if (Input.GetKeyDown (vKey)) {
+				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
+					if (acceptableKeys [it, 0] == vKey.ToString ()) {
+						doKeyDown (it, true);
+						myChuck.SetInt ("messageToSend", it + 100);
+						myChuck.BroadcastEvent ("sendMessage");
+					}
+				}
+			}
+			//change bool when no longer pressed down
+			if (Input.GetKeyUp (vKey)) {
+				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
+					if (acceptableKeys [it, 0] == vKey.ToString ()) {
+						doKeyUp (it, true);
+						myChuck.SetInt ("messageToSend", it);
+						myChuck.BroadcastEvent ("sendMessage");
+					}
+				}
+			}
+		}
+
+	}
+
+	//HANDLE KEY DOWNS
 	void doKeyDown(int it, bool thisKeyboard) {
 		string letterToAdd = acceptableKeys [it, 1];
 
@@ -358,7 +383,6 @@ public class MyStepController : MonoBehaviour {
 		}
 
 		if (currLetter < stepInstructions [1].Length && !thisKeyboard) {
-			//Debug.Log ("should be first char (h):" + letterToAdd);
 			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
 				pressTop = true;
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
@@ -375,6 +399,7 @@ public class MyStepController : MonoBehaviour {
 		}
 	}
 
+	//HANDLE KEY UPS
 	void doKeyUp(int it, bool thisKeyboard) {
 		string pressedLetter = acceptableKeys [it, 1];
 
@@ -426,33 +451,6 @@ public class MyStepController : MonoBehaviour {
 
 			}
 		}
-
-
-	}
-
-	void getKey(){
-		foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))) {
-			if (Input.GetKeyDown (vKey)) {
-				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
-					if (acceptableKeys [it, 0] == vKey.ToString ()) {
-						doKeyDown (it, true);
-						myChuck.SetInt ("messageToSend", it + 100);
-						myChuck.BroadcastEvent ("sendMessage");
-					}
-				}
-			}
-			//change bool when no longer pressed down
-			if (Input.GetKeyUp (vKey)) {
-				for (int it = 0; it < acceptableKeys.GetLength (0); it++) {
-					if (acceptableKeys [it, 0] == vKey.ToString ()) {
-						doKeyUp (it, true);
-						myChuck.SetInt ("messageToSend", it);
-						myChuck.BroadcastEvent ("sendMessage");
-					}
-				}
-			}
-		}
-
 	}
 
 	void GetIntCallback( System.Int64 messageReceived )
@@ -467,7 +465,7 @@ public class MyStepController : MonoBehaviour {
 		myChuck.GetInt ("messageReceived", myGetIntCallback);
 	}
 
-	// Wrap text  function
+	// Wrap instruction text
 	string ResolveTextSize(string input, int lineLength){
 
 		// Split string by char " "         
