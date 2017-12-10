@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour {
 
+	public bool startAnimation;
+	public bool doneAnimation;
+
 	public bool right;
 	public bool left;
 
@@ -19,11 +22,12 @@ public class LevelController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		startAnimation = false;
 		open = false;
 		close = false;
 		openDone = false;
 		closeDone = false;
-
+		doneAnimation = false;
 	}
 
 	void closeAnimation(){
@@ -44,6 +48,22 @@ public class LevelController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		if (startAnimation) {
+			if (!closeDone) {
+				close = true;
+			}else if (!openDone) {
+				open = true;
+			}
+			if (openDone && closeDone) {
+				openDone = false;
+				closeDone = false;
+				doneAnimation = true;
+			} else {
+				doneAnimation = false;
+			}
+		}
+
 		if (close) {
 			closeDone = false;
 			partner.SetActive (false);
@@ -58,8 +78,8 @@ public class LevelController : MonoBehaviour {
 			} else {
 				close = false; // turn off
 				closeDone = true;
+				openDone = false;
 				levelText.SetActive (true);
-
 			}
 			//turn on Level Text!
 			if(transform.position.x <= goalRightPosition && right){
@@ -80,7 +100,7 @@ public class LevelController : MonoBehaviour {
 				partner.SetActive (true);
 				you.SetActive (true);
 			}
-			//turn on Level Text!
+			//turn off Level Text!
 			if(transform.position.x >= 51.5f && right){
 				levelText.SetActive (false);
 			}

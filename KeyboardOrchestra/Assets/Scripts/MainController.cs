@@ -5,39 +5,20 @@ using UnityEngine;
 public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2, chuck code
-	/*
-	private string[,,] specialWords = new string[,,] { 
-		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
-		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
-		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
-		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
-		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
-		
-		{ { "", "", "bass", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "","in","in",""}, { "", "d*a", "acec", "0.7 => Global.synthGain;"} },
-		{ { "", "2", "cefe", @"0.4 => Global.synthGain2;"}, {"", ";;;", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
-		{ { "","7","key",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "99", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { ""," b ","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","3","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
-		{ { "","","aaddg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "---", "1357", "0.0 => Global.synthGain;"} },
-		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
-		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
-	};
-	*/
-
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
 
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
 		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
-		{ { "Sometimes you have to press two keys at once", "a", "team", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
+		{ { "Sometimes you have to press two keys at once", "a", "a", ""}, { "Sometimes you have to press two keys at once", "b", "team", ""} },
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
-		{ { "", "", "hello", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "","","in",""}, { "", "", "acec", "0.7 => Global.synthGain;"} },
-		{ { "", "", "cefe", @"0.4 => Global.synthGain2;"}, {"", "", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
-		{ { "","","keyrd",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "","","b b",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
+		{ { "", "", "test", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "","","hello",""}, { "", "", "", "0.7 => Global.synthGain;"} },
+		{ { "", "", "sup", @"0.4 => Global.synthGain2;"}, {"", "", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
+		{ { "","","word",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
+		{ { "","","lol",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
 		{ { "","","gg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
@@ -76,6 +57,8 @@ public class MainController : MonoBehaviour {
 	Chuck.FloatCallback myGetPosCallback;
 
 	private MyStepController step1Script;
+
+	private bool levelAnimationDone;
 
 	private int currRound;
 	private float myPos;
@@ -353,27 +336,32 @@ public class MainController : MonoBehaviour {
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
-
 		if (specialWords [currRound, playerNumber, 3] == "LEVEL") {
-			if (!leftLevelScript.closeDone) {
-				leftLevelScript.close = true;
-			}
-			if (!rightLevelScript.closeDone) {
-				rightLevelScript.close = true;
-			}if(leftLevelScript.closeDone && rightLevelScript.closeDone){
-				leftLevelScript.open = true;
-				rightLevelScript.open = true;
-			}if (leftLevelScript.openDone && rightLevelScript.openDone) {
-				currRound++;
-				updatedRound = false;
+
+			if (!leftLevelScript.doneAnimation && !rightLevelScript.doneAnimation) {
+				Debug.Log ("running animation");
+				leftLevelScript.startAnimation = true;
+				rightLevelScript.startAnimation = true;
+			} else {
+				//RESET ALL VARIABLES TO INITIAL POSITION
+				leftLevelScript.doneAnimation = false;
+				rightLevelScript.doneAnimation = false;
+				leftLevelScript.startAnimation = false;
+				rightLevelScript.startAnimation = false;
 				leftLevelScript.closeDone = false;
 				rightLevelScript.closeDone = false;
+				leftLevelScript.openDone = false;
+				rightLevelScript.openDone = false;
+
+				currRound++;
+				updatedRound = false;
+				Debug.Log ("done with level animation");
+				levelAnimationDone = true;				//weird bool to make level after the animation not skip
 			}
 		} else {
 
-
 			//USER IS DONE WITH STEP
-			if (myPos >= previousPos + 0.05f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
+			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
 
 				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
 					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
@@ -387,6 +375,7 @@ public class MainController : MonoBehaviour {
 				previousPos = myPos - 1;
 			}
 
+			//IF ticker gets to end of screen
 			if (myPos >= previousPos + 1.0f) {
 				alreadyCorrect = false;
 
@@ -413,12 +402,13 @@ public class MainController : MonoBehaviour {
 
 				previousPos = previousPos + 1.0f;
 
-				if (currRound < specialWords.GetLength (0)) {
-					int currLevelText = currRound / 5;
-					levelMesh.text = currLevelText.ToString();
+				if (currRound < specialWords.GetLength (0) && !levelAnimationDone) {
 					currRound++;
+					int currLevelText = currRound / 5;
+					levelMesh.text = "Level " + currLevelText.ToString ();
 					updatedRound = false;
 				}
+				levelAnimationDone = false;
 				Debug.Log ("Current Round: " + currRound);
 			}
 			float distanceMultiplier = 1.5f;
@@ -439,7 +429,6 @@ public class MainController : MonoBehaviour {
 				}
 			}
 		}
-
 	}
 
 	string[] oneD(int index1, int index2) {
@@ -452,7 +441,6 @@ public class MainController : MonoBehaviour {
 		return oneDArray;
 	}
 		
-
 	void GetPosCallback( System.Double pos )
 	{
 		myPos = (float) pos;
