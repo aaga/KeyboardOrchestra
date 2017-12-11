@@ -7,6 +7,7 @@ public class MainController : MonoBehaviour {
 	//Instruciton Text, input Text 1, input Text 2 (* signals no key placed at that location), chuck code (LEVEL is a code to trigger a new level animation)
 	private string[,,] specialWords = new string[,,] { 
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
+		{ { "","","","SETUP"}, { "", "", "", "SETUP"} },//new level
 
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
 		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },
@@ -40,6 +41,7 @@ public class MainController : MonoBehaviour {
 
 	public GameObject step1;
 	public GameObject mainBackground;
+	public GameObject setupScreen;
 
 	//Level Animation Objects and scripts
 	public GameObject leftLevel;
@@ -49,6 +51,8 @@ public class MainController : MonoBehaviour {
 	public GameObject levelText;
 	private TextMesh levelMesh;
 	private bool levelAnimationDone;
+
+	private bool setupDone;
 
 	public int playerNumber;
 
@@ -364,6 +368,15 @@ public class MainController : MonoBehaviour {
 				Debug.Log ("done with level animation");
 				levelAnimationDone = true;				//weird bool to make level after the animation not skip
 			}
+		} else if (specialWords [currRound, playerNumber, 3] == "SETUP") {
+			setupScreen.SetActive (true);
+			if (setupScreen.GetComponent<SetupController> ().setupDone) {
+				currRound++;
+				updatedRound = false;
+				Debug.Log ("done with setup");
+				setupScreen.SetActive (false);
+				setupDone = true;				//weird bool to make level after the animation not skip
+			}
 		} else {
 
 			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
@@ -412,13 +425,14 @@ public class MainController : MonoBehaviour {
 				previousPos = previousPos + 1.0f;
 
 				//move on to next round
-				if (currRound < specialWords.GetLength (0) && !levelAnimationDone) {
+				if (currRound < specialWords.GetLength (0) && !levelAnimationDone && !setupDone) {
 					currRound++;
 					int currLevelText = currRound / 5;
 					levelMesh.text = "Level " + currLevelText.ToString ();
 					updatedRound = false;
 				}
 				levelAnimationDone = false;
+				setupDone = false;
 				Debug.Log ("Current Round: " + currRound);
 			}
 			float distanceMultiplier = 1.5f;

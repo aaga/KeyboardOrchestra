@@ -11,12 +11,13 @@ public class MyStepController : MonoBehaviour {
 	public String receivingPort;
 
 	private TextMesh instructionMesh;
-	private TextMesh inputMesh;
-//	private string[,] specialWords = new string[,] { { "VOID", "void"},{ "RETURN", "return"},{ "GE", "ge"},{ "=>", "chuck"}, {"TEST", "0"} , {"OOOO", "100"}};
 	private string[,] acceptableKeys = new string[,] { { "A", "a", "0"}, { "B", "b", "0"}, { "C", "c", "0"}, { "D", "d", "0"}, { "E", "e", "0"}, { "F", "f", "0"}, { "G", "g", "0"}, { "H", "h", "0"}, { "I", "i", "0"}, { "J", "j", "0"}, { "K", "k", "0"}, { "L", "l", "0"}, { "M", "m", "0"}, { "N", "n", "0"}, { "O", "o", "0"}, { "P", "p", "0"}, { "Q", "q", "0"}, { "R", "r", "0"}, { "S", "s", "0"}, { "T", "t", "0"}, { "U", "u", "0"}, { "V", "v", "0"}, { "W", "w", "0"}, { "X", "x", "0"}, { "Y", "y", "0"}, { "Z", "z", "0"}, { "Alpha0", "0", "0"}, { "Alpha1", "1", "0"}, { "Alpha2", "2", "0"}, { "Alpha3", "3", "0"}, { "Alpha4", "4", "0"}, { "Alpha5", "5", "0"}, { "Alpha6", "6", "0"}, { "Alpha7", "7", "0"}, { "Alpha8", "8", "0"}, { "Alpha9", "9", "0"}, { "Alpha00", "0", "0"}, { "Semicolon", ";", "0"}, { "Equals", "=", "0"}, { "Backspace", "", "0"}, { "LeftParen", "(", "0"}, { "RightParen", ")", "0"},{ "DoubleQuote", @"""", "0"},{ "Plus", "+", "0"},{ "Minus", "-", "0"},{ "Period", ".", "0"},{ "Colon", ":", "0"},{ "Greater", ">", "0"},{ "Less", "<", "0"},{ "Slash", "/", "0"},{ "Space", " ", "1"}};
 //	public int presetButton;
 	public GameObject instructionText;
 	public GameObject inputText;
+
+	public GameObject main;
+	private MainController mainScript;
 
 	public GameObject ticker;
 	private int currLetter;
@@ -58,7 +59,6 @@ public class MyStepController : MonoBehaviour {
 		startTheTicker = false;
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
 
-		inputMesh = (TextMesh)inputText.GetComponent(typeof(TextMesh));
 		currLetter = 0;
 		linePos = 0.0f;
 
@@ -71,6 +71,12 @@ public class MyStepController : MonoBehaviour {
 		myCallback = Chuck.CreateVoidCallback( NewMessageReceived );
 		message = -1;
 		newMessage = false;
+
+		mainScript = main.GetComponent<MainController> ();
+
+		//assume single player and change later!
+		sendingPort = "6449";
+		receivingPort = "6449";
 
 		initialTickerX = ticker.transform.position.x;
 
