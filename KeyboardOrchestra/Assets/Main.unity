@@ -1800,7 +1800,7 @@ MonoBehaviour:
   leftLevel: {fileID: 1257434983}
   rightLevel: {fileID: 1194109813}
   levelText: {fileID: 1039111074}
-  playerNumber: 0
+  playerNumber: 1
   timestep: 4
 --- !u!4 &1333581976
 Transform:

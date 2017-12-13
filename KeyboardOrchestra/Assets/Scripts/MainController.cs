@@ -6,8 +6,8 @@ public class MainController : MonoBehaviour {
 
 	//Instruciton Text, input Text 1, input Text 2 (* signals no key placed at that location), chuck code (LEVEL is a code to trigger a new level animation)
 	private string[,,] specialWords = new string[,,] { 
+		{ { "","*","*","SETUP"}, { "", "*", "*", "SETUP"} },//new level
 		{ { "Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" }, {"Welcome to the Keyboard Orchestra. Type start to begin.", "", "start", "" } },
-		{ { "","","","SETUP"}, { "", "", "", "SETUP"} },//new level
 
 		{ { "You are player...", "", "one", ""}, { "You are player...", "", "two", ""} },
 		{ { "You can also play your partner's keyboard!", "two", "", ""}, { "You can also play your partner's keyboard!", "one", "", ""} },

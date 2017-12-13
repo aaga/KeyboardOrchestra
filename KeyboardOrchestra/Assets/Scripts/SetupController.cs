@@ -63,26 +63,33 @@ public class SetupController : MonoBehaviour {
 						if (vKey.ToString () == "Backspace") {
 							ipInputMesh.text = ipInputMesh.text.Substring (0, (ipInputMesh.text.Length - 1));
 						}
+						//user done
 						if (vKey.ToString () == "Return") {
 							setupDone = true;
+							string otherIP;
+							string receivingPort;
+							string sendingPort;
+
+							if (ipInputMesh.text == "") {
+								otherIP = "localhost";
+								sendingPort = "6449";
+								receivingPort = "6449";
+							} else {
+								otherIP = ipInputMesh.text;
+							}
+							//enable for two player mode - not testing
+							if (mainScript.playerNumber == 0) {
+								sendingPort = "6449";
+								receivingPort = "6439";
+							} else if (mainScript.playerNumber == 1) {
+								sendingPort = "6439";
+								receivingPort = "6449";
+							}
+							stepScript.runTheChuck (otherIP, receivingPort, sendingPort);
+
 						}
 						ipInputMesh.text += letterToAdd;
 						it = acceptableKeys.GetLength (0);
-						stepScript.otherIP = ipInputMesh.text;
-						//if user sets the IP to be themselves, 
-						if (ipInputMesh.text == "") {
-							stepScript.otherIP = "localhost";
-							stepScript.sendingPort = "6449";
-							stepScript.receivingPort = "6449";
-						}
-						//enable for two player mode - not testing
-						if (mainScript.playerNumber == 0) {
-							stepScript.sendingPort = "6449";
-							stepScript.receivingPort = "6439";
-						} else if (mainScript.playerNumber == 1) {
-							stepScript.sendingPort = "6439";
-							stepScript.receivingPort = "6449";
-						}
 					}
 				}
 			}

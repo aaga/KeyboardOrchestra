@@ -6,10 +6,6 @@ using System;
 
 public class MyStepController : MonoBehaviour {
 
-	public String otherIP;
-	public String sendingPort;
-	public String receivingPort;
-
 	private TextMesh instructionMesh;
 	private string[,] acceptableKeys = new string[,] { { "A", "a", "0"}, { "B", "b", "0"}, { "C", "c", "0"}, { "D", "d", "0"}, { "E", "e", "0"}, { "F", "f", "0"}, { "G", "g", "0"}, { "H", "h", "0"}, { "I", "i", "0"}, { "J", "j", "0"}, { "K", "k", "0"}, { "L", "l", "0"}, { "M", "m", "0"}, { "N", "n", "0"}, { "O", "o", "0"}, { "P", "p", "0"}, { "Q", "q", "0"}, { "R", "r", "0"}, { "S", "s", "0"}, { "T", "t", "0"}, { "U", "u", "0"}, { "V", "v", "0"}, { "W", "w", "0"}, { "X", "x", "0"}, { "Y", "y", "0"}, { "Z", "z", "0"}, { "Alpha0", "0", "0"}, { "Alpha1", "1", "0"}, { "Alpha2", "2", "0"}, { "Alpha3", "3", "0"}, { "Alpha4", "4", "0"}, { "Alpha5", "5", "0"}, { "Alpha6", "6", "0"}, { "Alpha7", "7", "0"}, { "Alpha8", "8", "0"}, { "Alpha9", "9", "0"}, { "Alpha00", "0", "0"}, { "Semicolon", ";", "0"}, { "Equals", "=", "0"}, { "Backspace", "", "0"}, { "LeftParen", "(", "0"}, { "RightParen", ")", "0"},{ "DoubleQuote", @"""", "0"},{ "Plus", "+", "0"},{ "Minus", "-", "0"},{ "Period", ".", "0"},{ "Colon", ":", "0"},{ "Greater", ">", "0"},{ "Less", "<", "0"},{ "Slash", "/", "0"},{ "Space", " ", "1"}};
 //	public int presetButton;
@@ -94,8 +90,30 @@ public class MyStepController : MonoBehaviour {
 		currKeysBottom.AddComponent<MeshFilter>();
 		currKeysBottom.AddComponent<MeshRenderer>();
 
+		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
+	}
+
+	//Change the amount of Red (punishment) on ticker
+	public void updateStaticBar(int level) {
+		if (level >= ticker.transform.childCount) {
+			level = ticker.transform.childCount;
+		}
+		for (int i = 0; i < level; i++) {
+			ticker.transform.GetChild (i).gameObject.SetActive (true);
+		}
+
+		for (int i = level; i < ticker.transform.childCount; i++) {
+			ticker.transform.GetChild (i).gameObject.SetActive (false);
+		}
+
+		myChuck.SetFloat ("staticGain", (float)level / (float) 250);
+		myChuck.BroadcastEvent ("staticLevelUpdated");
+	}
+
+	public void runTheChuck(String otherIP, String receivingPort, String sendingPort) {
 		myChuck.RunCode(
 			@"
+
 			0 => external int messageToSend;
 			0 => external int messageReceived;
 			0.0 => external float staticGain;
@@ -111,9 +129,9 @@ public class MyStepController : MonoBehaviour {
 			external Event staticLevelUpdated;
 
 			// address of other computer
-			""" + otherIP + @""" => string hostname;
+			" + otherIP + @" => string hostname;
 			// sending on port
-			" + sendingPort + @" => int port;
+			" + sendingPort + @ => int port;
 
 			// check command line
 			//if( me.args() ) me.arg(0) => hostname;
@@ -237,29 +255,14 @@ public class MyStepController : MonoBehaviour {
 
 			"
 		);
-
-		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
-	}
-
-	//Change the amount of Red (punishment) on ticker
-	public void updateStaticBar(int level) {
-		if (level >= ticker.transform.childCount) {
-			level = ticker.transform.childCount;
-		}
-		for (int i = 0; i < level; i++) {
-			ticker.transform.GetChild (i).gameObject.SetActive (true);
-		}
-
-		for (int i = level; i < ticker.transform.childCount; i++) {
-			ticker.transform.GetChild (i).gameObject.SetActive (false);
-		}
-
-		myChuck.SetFloat ("staticGain", (float)level / (float) 250);
-		myChuck.BroadcastEvent ("staticLevelUpdated");
 	}
 
 	//RUN ONCE EVERY FRAME
 	void Update () {
+
+		myChuck.RunCode(otherIP + " => Global.otherIP;");
+		myChuck.RunCode(receivingPort + " => Global.receivingPort;");
+		myChuck.RunCode(sendingPort + " => Global.sendingPort;");
 
 		if (newMessage) {
 			if (message == 1000) {
