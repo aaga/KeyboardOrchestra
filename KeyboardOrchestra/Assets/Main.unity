@@ -1801,7 +1801,7 @@ MonoBehaviour:
   rightLevel: {fileID: 1194109813}
   levelText: {fileID: 1039111074}
   playerNumber: 1
-  timestep: 4
+  timestep: 8
 --- !u!4 &1333581976
 Transform:
   m_ObjectHideFlags: 0

@@ -25,7 +25,7 @@ public class MyStepController : MonoBehaviour {
 	private int doubleWhammy; // 0 is off, 1 is top already pressed, 2 is bottom already pressed
 	public bool topDone;
 	public bool bottomDone;
-	private bool otherReady;
+	public bool otherReady;
 	public bool startTheTicker;
 
 	private Color32 topColor;
@@ -293,15 +293,22 @@ public class MyStepController : MonoBehaviour {
 		//do the interaction
 		getKey();
 
-		//if received instrucitons, and both are completed, and both existed in the first place
+		//if received instructions, and both are completed, and both existed in the first place
 		if (stepInstructions.Length > 0 && currLetter >= stepInstructions [1].Length  && currLetter >= stepInstructions [2].Length) {
 			//Debug.Log ("FINISHED BOTH WORDS");
 			topDone = true;
 			bottomDone = true;
+
+			//other person is done with round
+			myChuck.SetInt ("messageToSend", 1000);
+			myChuck.BroadcastEvent ("sendMessage");
+
 			if (!startTheTicker) {
 				myChuck.SetInt ("messageToSend", 1000);
 				myChuck.BroadcastEvent ("sendMessage");
 			}
+
+			//both people done
 			if (otherReady) {
 				startTheTicker = true;
 			}

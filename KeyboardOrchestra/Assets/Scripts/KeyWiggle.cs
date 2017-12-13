@@ -39,8 +39,14 @@ public class KeyWiggle : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-//		float scale = .1f + Mathf.PingPong(Time.time * 0.2f, 1f - .1f);
-//		transform.localScale = new Vector3(scale, scale, scale);
+		
+		float pulseSpeed = .35f; //todo: change to chuck value
+		float pulseRange = .15f; // pulse from .8 to 1 times the scale
+
+		//PingPongs the value t, so that it is never larger than length and never smaller than 0.
+		float scale = (1f - pulseRange) + Mathf.PingPong(Time.time * pulseSpeed, pulseRange);
+		transform.localScale = new Vector3(scale, scale, scale);
+
 		if (doRotations) {
 			transform.RotateAround (rotationPosition, Vector3.forward, Time.deltaTime * speed * clockwise);
 			if (clockwise == 1) {

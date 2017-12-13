@@ -94,8 +94,6 @@ public class MainController : MonoBehaviour {
 		leftLevelScript = leftLevel.GetComponent<LevelController> ();
 		rightLevelScript = rightLevel.GetComponent<LevelController> ();
 
-		timestep = 4;
-
 		levelMesh = (TextMesh)levelText.GetComponent(typeof(TextMesh));
 
 		//set colors
@@ -386,7 +384,11 @@ public class MainController : MonoBehaviour {
 				step1Script.updateStaticBar (staticLevel);
 				alreadyCorrect = true;
 
-				previousPos = myPos - 1;
+				//immediacy (brings to end of round)
+				if (step1Script.otherReady) {	//WAIT: only if the other person is ready
+					previousPos = myPos - 1;
+					step1Script.otherReady = false;
+				}
 			}
 
 			//IF ticker gets to end of screen
