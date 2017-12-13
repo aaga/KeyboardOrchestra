@@ -306,12 +306,6 @@ public class MainController : MonoBehaviour {
 							spork ~ updatePos();
 
 							//ALL MUSIC PLAYS BELOW IN SEQUENCE
-
-							//if(firstTime == 1){
-							//	0 => firstTime;
-							//	spork ~ playIntroMelody();
-							//}
-
 							spork ~ playMelody();
 							spork ~ playBass();
 							spork ~ playMelody2();
@@ -349,7 +343,6 @@ public class MainController : MonoBehaviour {
 		if (specialWords [currRound, playerNumber, 3] == "LEVEL") {
 
 			if (!leftLevelScript.doneAnimation && !rightLevelScript.doneAnimation) {
-				Debug.Log ("running animation");
 				leftLevelScript.startAnimation = true;
 				rightLevelScript.startAnimation = true;
 			} else {
