@@ -444,7 +444,7 @@ public class MainController : MonoBehaviour {
 					}
 				} else {
 					
-					mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
+					//mainBackground.GetComponent<Renderer> ().material.color = normalBackgroundColor;
 				}
 			}
 		}
