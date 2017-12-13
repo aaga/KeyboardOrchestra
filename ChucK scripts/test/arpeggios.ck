@@ -1,3 +1,5 @@
+class Arpeggio {
+
 SqrOsc foo;
 
 ADSR e;
@@ -22,11 +24,7 @@ foo => e => lpf => r => dac;
 // reverb
 0 => r.mix;
 
-40 => int millis;
-60 => int start;
-1 => int major; // 0 for minor
-
-while( true )
+public void play(int millis, int start, int major)
 {
     Std.mtof(start) => foo.freq;
     1 => e.keyOn;
@@ -42,4 +40,6 @@ while( true )
     1 => e.keyOn;
     millis::ms => now;
     0 => e.keyOn;
+}
+
 }
