@@ -85,8 +85,6 @@ public class MyStepController : MonoBehaviour {
 		currKeysBottom = new GameObject("currKeysBottom");
 		currKeysBottom.AddComponent<MeshFilter>();
 		currKeysBottom.AddComponent<MeshRenderer>();
-
-		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
 	}
 
 	//Change the amount of Red (punishment) on ticker
@@ -106,7 +104,8 @@ public class MyStepController : MonoBehaviour {
 		myChuck.BroadcastEvent ("staticLevelUpdated");
 	}
 
-	public void runTheChuck(String otherIP, String receivingPort, String sendingPort) {
+	public void runTheChuck(string otherIP, string receivingPort, string sendingPort) {
+		Debug.Log (otherIP + receivingPort + sendingPort);
 		myChuck.RunCode(
 			@"
 
@@ -125,7 +124,7 @@ public class MyStepController : MonoBehaviour {
 			external Event staticLevelUpdated;
 
 			// address of other computer
-			" + otherIP + @" => string hostname;
+			""" + otherIP + @""" => string hostname;
 			// sending on port
 			" + sendingPort + @" => int port;
 
@@ -251,6 +250,7 @@ public class MyStepController : MonoBehaviour {
 
 			"
 		);
+		myChuck.StartListeningForChuckEvent( "notifier", myCallback );
 	}
 
 	//RUN ONCE EVERY FRAME

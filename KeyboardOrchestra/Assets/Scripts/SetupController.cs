@@ -70,13 +70,6 @@ public class SetupController : MonoBehaviour {
 							string receivingPort = "";
 							string sendingPort = "";
 
-							if (ipInputMesh.text == "") {
-								otherIP = "localhost";
-								sendingPort = "6449";
-								receivingPort = "6449";
-							} else {
-								otherIP = ipInputMesh.text;
-							}
 							//enable for two player mode - not testing
 							if (mainScript.playerNumber == 0) {
 								sendingPort = "6449";
@@ -85,6 +78,15 @@ public class SetupController : MonoBehaviour {
 								sendingPort = "6439";
 								receivingPort = "6449";
 							}
+
+							if (ipInputMesh.text == "" || ipInputMesh.text == "localhost") {
+								otherIP = "localhost";
+								sendingPort = "6449";
+								receivingPort = "6449";
+							} else {
+								otherIP = ipInputMesh.text;
+							}
+
 							stepScript.runTheChuck (otherIP, receivingPort, sendingPort);
 
 						}
