@@ -70,10 +70,6 @@ public class MyStepController : MonoBehaviour {
 
 		mainScript = main.GetComponent<MainController> ();
 
-		//assume single player and change later!
-		sendingPort = "6449";
-		receivingPort = "6449";
-
 		initialTickerX = ticker.transform.position.x;
 
 		for (int i = 0; i < acceptableKeys.GetLength(0); i++) {
@@ -131,7 +127,7 @@ public class MyStepController : MonoBehaviour {
 			// address of other computer
 			" + otherIP + @" => string hostname;
 			// sending on port
-			" + sendingPort + @ => int port;
+			" + sendingPort + @" => int port;
 
 			// check command line
 			//if( me.args() ) me.arg(0) => hostname;
@@ -259,10 +255,6 @@ public class MyStepController : MonoBehaviour {
 
 	//RUN ONCE EVERY FRAME
 	void Update () {
-
-		myChuck.RunCode(otherIP + " => Global.otherIP;");
-		myChuck.RunCode(receivingPort + " => Global.receivingPort;");
-		myChuck.RunCode(sendingPort + " => Global.sendingPort;");
 
 		if (newMessage) {
 			if (message == 1000) {

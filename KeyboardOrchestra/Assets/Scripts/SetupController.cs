@@ -67,8 +67,8 @@ public class SetupController : MonoBehaviour {
 						if (vKey.ToString () == "Return") {
 							setupDone = true;
 							string otherIP;
-							string receivingPort;
-							string sendingPort;
+							string receivingPort = "";
+							string sendingPort = "";
 
 							if (ipInputMesh.text == "") {
 								otherIP = "localhost";
