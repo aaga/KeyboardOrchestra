@@ -21,7 +21,7 @@ public class MainController : MonoBehaviour {
 		{ { "", "", "aa", ""}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "","","b b",""}, { "", "", "ab", ""} },
 		{ { "", "", "cd", ""}, {"", "", "cde", ""} },
-		{ { "","","eeef",""}, { "", "", "f*gh", ""} },
+		{ { "","","eeef",""}, { "", "", "fgh", ""} },
 		{ { "","","g;g",""}, {"","","ijkl",""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
@@ -495,7 +495,7 @@ public class MainController : MonoBehaviour {
 
 				//user got it wrong
 				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3 || !gotCorrect) {
-					if (currRound >= 9) {
+					if (currRound >= 10) {
 						myChuck.BroadcastEvent ("keyFailTrigger");
 						staticLevel++;
 					}
