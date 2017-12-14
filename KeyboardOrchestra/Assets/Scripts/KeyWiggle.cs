@@ -57,7 +57,7 @@ public class KeyWiggle : MonoBehaviour {
 		if (scale >= .99) {
 			Debug.Log ("time: " + Time.time);
 		}
-		*/
+
 		float pulseRange = .15f; // pulse from .8 to 1 times the scale
 		float chuckBeat;
 		chuckBeat * 20;	//0-20 (switch at 10)
@@ -69,7 +69,7 @@ public class KeyWiggle : MonoBehaviour {
 		chuckBeat = Mathf.Pow(chuckBeat,2);	//0-100 in quadratic
 		scale = (1 - pulseRange) + (scale / 100f) * (pulseRange);
 		transform.localScale = new Vector3(scale, scale, scale);
-
+*/
 
 		if (doRotations) {
 			transform.RotateAround (rotationPosition, Vector3.forward, Time.deltaTime * speed * clockwise);

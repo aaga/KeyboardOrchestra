@@ -109,21 +109,6 @@ public class MainController : MonoBehaviour {
 		}
 		myChuck.RunCode(@"
 						public class Global {
-							static float synthGain;
-							static float longSynthGain;
-
-							static float synthGain2;
-			    			static float bassGain;
-			    			static float tripletGain;
-
-							static float introGain;
-
-			    			static int synthMelody[];
-			    			static int longSynthMelody[];
-
-			    			static int synthMelody2[];
-			    			static int bassMelody[];
-
 						}
 						external Event gotCorrect;
 						external Event startTicker;
@@ -131,8 +116,7 @@ public class MainController : MonoBehaviour {
 						external Event keyFailTrigger;
 						external Event endIntroMusic;
 
-					 	32 => external int timeStep;
-						8.0 => float masterTimer;
+					 	" + timestep + @" => external int timeStep;
 						external float pos;
 
 						fun void updatePos() {
@@ -148,43 +132,8 @@ public class MainController : MonoBehaviour {
 							}
 						}
 
-						[65,65,68,66] @=> Global.synthMelody;
-						[65,70,68,67,67,72,70,69] @=> Global.longSynthMelody;
-
-						[69,71,73,71] @=> Global.synthMelody2;
-						[50,50,57,57] @=> Global.bassMelody;
-
-						0 => Global.synthGain;
-						0 => Global.longSynthGain;
-
-						0 => Global.synthGain2;
-						0 => Global.bassGain;
-						0 => Global.tripletGain;
-
-						SinOsc synth => ADSR e => Gain localSynthGain => dac;
-						SinOsc synth2 => Gain localSynthGain2 => dac;
-						SinOsc longSynth => Gain localLongSynthGain => dac;
-
-						SinOsc bass => Gain localBassGain => dac;
-						SinOsc triplet => Gain localTripletGain => dac;
-
-						0 => synth.freq;
-						0 => longSynth.freq;
-
-						0 => synth2.freq;
-						0 => bass.freq;
-						0 => triplet.freq;	
-
-						200::ms => e.attackTime;
-						100::ms => e.decayTime;
-						.5 => e.sustainLevel;
-						200::ms => e.releaseTime;
-						1 => e.keyOn;
-
 						Gain localIntroGain;
-						" + initialIntroGain + @" => Global.introGain;
 						" + initialIntroGain + @" => localIntroGain.gain;
-						//1 => int firstTime;
 
 						fun void fadeIntro(){
 							endIntroMusic => now;
@@ -209,66 +158,7 @@ public class MainController : MonoBehaviour {
 							spork ~ fadeIntro();
 							buf.length() => now;	
 						}
-	
-						fun void playMelody() {
-							for (0 => int i; i < masterTimer; i++) {
-							    for (0 => int x; x < Global.synthMelody.cap(); x++)
-							    {
-									Global.synthGain => localSynthGain.gain;
-							        Global.synthMelody[x] => Std.mtof => synth.freq;
-							        ((timeStep/masterTimer)*1000/Global.synthMelody.cap()/2)::ms => now;
-							        0 => synth.freq;
-							        ((timeStep/masterTimer)*1000/Global.synthMelody.cap()/2)::ms => now;
-							    }
-							}
-						}
 
-						fun void playMelody2() {
-						    for (0 => int i; i < masterTimer; i++) {
-						        for (0 => int x; x < Global.synthMelody2.cap(); x++)
-						        {
-									Global.synthGain2 => localSynthGain2.gain;
-						            Global.synthMelody2[x] => Std.mtof => synth2.freq;
-							        ((timeStep/masterTimer)*1000/Global.synthMelody2.cap()/2)::ms => now;
-						            0 => synth2.freq;
-							        ((timeStep/masterTimer)*1000/Global.synthMelody2.cap()/2)::ms => now;
-						        }
-						    }
-						}
-
-						fun void playLongMelody() {
-							for (0 => int i; i < masterTimer; i++) {
-							    for (0 => int x; x < Global.longSynthMelody.cap(); x++)
-							    {
-									Global.longSynthGain => localLongSynthGain.gain;
-							        Global.longSynthMelody[x] => Std.mtof => longSynth.freq;
-							        ((timeStep/masterTimer)*1000/Global.longSynthMelody.cap())::ms => now;
-							    }
-							}
-						}
-						
-						fun void playBass() {
-							for (0 => int i; i < masterTimer; i++) {
-							    for (0 => int x; x < Global.bassMelody.cap(); x++)
-							    {
-									Global.bassGain => localBassGain.gain;
-							        Global.bassMelody[x] => Std.mtof => bass.freq;
-							        ((timeStep/masterTimer)*1000/Global.bassMelody.cap())::ms => now;
-							    }
-							}
-						}
-
-						fun void playTriplet() {
-							for (0 => int i; i < masterTimer; i++) {
-								for(0 => int x; x < 3 ; x++){
-									Global.tripletGain => localTripletGain.gain;
-							        69 => Std.mtof => triplet.freq;
-							        ((timeStep/masterTimer)*1000/3/2)::ms => now;
-							        0 => triplet.freq;
-							        ((timeStep/masterTimer)*1000/3/2)::ms => now;
-								}
-							}
-						}
 
 						//play if they get a step correct
 						fun void playCorrect() {
@@ -296,25 +186,172 @@ public class MainController : MonoBehaviour {
 
 						spork ~ keyFailSound();
 						spork ~ playIntroMelody();
+
+						class Chord {
+						    
+						    5 => int size;
+						    
+						    BlitSquare osc[5];
+						    ADSR adsr[5];
+						    
+						    Gain g => dac;
+						    
+						    50::ms => dur attack;
+						    25::ms => dur decay;
+						    0.5 => float sustain;
+						    25::ms => dur release;
+						    
+						    0.3 => g.gain;
+						    
+						    for (0 => int i; i < size; i++) {
+						        osc[i] => adsr[i];
+						        adsr[i] => g;
+						        adsr[i].set(attack, decay, sustain, release);
+						    }
+						    
+						    public void play(int num, int note) {
+						        Std.mtof(note) => osc[num].freq;
+						        1 => adsr[num].keyOn;
+						    }
+						    
+						    public void softOff() {
+						        for (0 => int i; i < size; i++) {
+						            1 => adsr[i].keyOff;
+						        }
+						    }
+						    
+						    public void hardOff() {
+						        for (0 => int i; i < size; i++) {
+						            0::ms => adsr[i].releaseTime;
+						        }
+						        softOff();
+						        for (0 => int i; i < size; i++) {
+						            release => adsr[i].releaseTime;
+						        }
+						    }
+						    
+						}
+
+						class DrumSet {
+						    // define hihat
+						    Shakers hhs => JCRev r;
+						    .025 => r.mix;
+						    Std.mtof( 76 ) => hhs.freq;
+						    
+						    // Define Bassdrum
+						    SinOsc s => ADSR bda;
+						    80 => s.freq;
+						    (0::ms, 10::ms, 0.0, 0::ms ) => bda.set;
+						    
+						    // define snare drum
+						    Noise n => ADSR sna => Gain g => dac;
+						    0.15 => g.gain;
+						    (0::ms, 25::ms, 0.0, 0::ms) => sna.set;
+						    
+						    
+						    public void connect( UGen ugen ) {
+						        r => ugen;
+						        bda => ugen;
+						        g => ugen;
+						    }
+						    
+						    public void hh() {
+						        1 => hhs.noteOn;
+						    }
+						    
+						    public void bd() {
+						        1 => bda.keyOn;
+						    }
+						    
+						    public void sn() {
+						        1 => sna.keyOn;
+						    }
+						}
+
+						class Bass {
+						    // BASS
+						    SawOsc sb => LPF filt => ADSR a => Gain g2;
+						    440 => filt.freq;
+						    0.3 => filt.Q;
+						    0.0 => g2.gain;
+						    (10::ms, 45::ms, 0.5, 40::ms) => a.set; // Set ADSR envelope
+						    
+						    public void connect( UGen u ) {
+						        g2 => u;
+						    }
+						    
+						    public void bass( int tone ) {
+						        Std.mtof( tone ) =>  sb.freq;
+						        0.3 => g2.gain;
+						        1 => a.keyOn;
+						        125::ms => now;
+						        1=> a.keyOff;
+						    }
+						}
+
+						class BassDrumLoop {
+						    
+							Gain g => dac;
+							g.gain(1);
+						    DrumSet drm;
+						    drm.connect( g );
+						    
+						    Bass bass;
+						    bass.connect( g );
+						    
+						    [ 41, 41, 44, 46] @=> int bline[];
+						    0 => int pos;
+						    0 => int count;
+						    
+						    250::ms => dur length;
+						    
+						    public void setLength(dur l) {
+						        l => length;
+						    }
+						    
+						    public void reset() {
+						        0 => pos;
+						        0 => count;
+						    }
+						    
+						    public void setKey(int key) {
+						        [ key, key, key + 3, key + 5] @=> bline;
+						    }
+
+							public void stop() {
+							        g.gain(0);
+							}
+						    
+						    public void play() {
+						        while ( true ) {
+						            drm.hh();
+						            if ( count % 2 == 0 ) { drm.bd(); }
+						            if ( count % 4 == 2 ) { drm.sn(); }
+						            
+						            if ( count % 2 == 0 ) { spork ~ bass.bass( bline[ pos % 4 ]); }
+						            if ( count % 2 == 1 ) { spork ~ bass.bass( 12 + bline[ pos % 4 ]); }
+						            
+						            
+						            1 + count => count;
+						            if ( count % 4 == 0 ) { 1 + pos => pos; }
+						            length => now;
+						        }
+						    }
+						    
+						}
+						BassDrumLoop bdl;
+						Chord chord;
+
 						startTicker => now;
 								
 						while( true )
 						{
 							spork ~ updatePos();
-
-							//ALL MUSIC PLAYS BELOW IN SEQUENCE
-							spork ~ playMelody();
-							spork ~ playBass();
-							spork ~ playMelody2();
-							spork ~ playLongMelody();
-
-							spork ~ playTriplet();
-							spork ~ playCorrect();
-							50::ms => now; //delay to make playCorrect not trigger twice
+							// spork ~ playCorrect();
+							// 50::ms => now; //delay to make playCorrect not trigger twice
 							timeStep::second => now;
 						}
 					");
-		myChuck.SetInt ("timeStep", timestep);
 	}
 	
 	//RUN EVERY FRAME
@@ -371,7 +408,6 @@ public class MainController : MonoBehaviour {
 
 			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
 			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && (!alreadyCorrect || step1Script.goToNextStep)) {
-				Debug.Log ("main thinks that I am done");
 				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
 					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 				}
@@ -447,6 +483,35 @@ public class MainController : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	public void startBassline() {
+		myChuck.RunCode ("spork ~ bdl.play();");
+	}
+
+	public void resetBassline() {
+		myChuck.RunCode ("bdl.reset()");
+	}
+
+	public void stopBassline() {
+		myChuck.RunCode ("bdl.stop()");
+	}
+
+	public void setLength(float milliseconds) {
+		milliseconds /= 16.0f;
+		myChuck.RunCode ("bdl.setLength(" + milliseconds + "::ms);");
+	}
+
+	public void setKey(int key) {
+		myChuck.RunCode ("bdl.setKey(" + key + ");");
+	}
+
+	public void playChordNote(int keyNum, int note) {
+		myChuck.RunCode ("chord.play(" + keyNum + "," + note + ");");
+	}
+
+	public void offChord() {
+		myChuck.RunCode ("chord.softOff();");
 	}
 
 	string[] oneD(int index1, int index2) {

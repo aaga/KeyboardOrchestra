@@ -313,7 +313,6 @@ public class MyStepController : MonoBehaviour {
 
 			//both people done
 			if (otherReady) {
-				Debug.Log ("both people done");
 				otherReady = false;
 				startTheTicker = true;
 				goToNextStep = true;
