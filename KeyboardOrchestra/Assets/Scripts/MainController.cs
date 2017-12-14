@@ -81,6 +81,7 @@ public class MainController : MonoBehaviour {
 	private bool updatedRound;
 	private bool tickerStarted;
 	private bool alreadyCorrect;
+	private bool gotCorrect;
 	public int staticLevel;
 	public float myBeat;
 
@@ -98,6 +99,7 @@ public class MainController : MonoBehaviour {
 		updatedRound = false;
 		tickerStarted = false;
 		alreadyCorrect = false;
+		gotCorrect = false;
 		myPos = 0.0f;
 		previousPos = 0.0f;
 		step1Script = step1.GetComponent<MyStepController> ();
@@ -416,7 +418,7 @@ public class MainController : MonoBehaviour {
 				rightLevelScript.startAnimation = true;
 			} else {
 				//up the key of the music
-				if (currRound > 6) {
+				if (currRound > 10) {
 					currKey++;
 					setKey (currKey);
 					currStepInLevel = 1;
@@ -473,6 +475,7 @@ public class MainController : MonoBehaviour {
 					Debug.Log ("go to next round");
 					previousPos = myPos - 1;
 					step1Script.goToNextStep = false;
+					gotCorrect = true;
 				}
 			}
 
@@ -491,9 +494,11 @@ public class MainController : MonoBehaviour {
 				Debug.Log ("currRound in Main: " + currRound);
 
 				//user got it wrong
-				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3 || !step1Script.goToNextStep) {
-					myChuck.BroadcastEvent ("keyFailTrigger");
-					staticLevel++;
+				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3 || !gotCorrect) {
+					if (currRound >= 9) {
+						myChuck.BroadcastEvent ("keyFailTrigger");
+						staticLevel++;
+					}
 				}
 				step1Script.updateStaticBar (staticLevel);
 
@@ -520,6 +525,7 @@ public class MainController : MonoBehaviour {
 				if (currRound == 7) {
 					startBassline ();
 				}
+				gotCorrect = false;
 			}
 			float distanceMultiplier = 1.5f;
 			step1Script.linePos = (myPos - previousPos) * distanceMultiplier;
