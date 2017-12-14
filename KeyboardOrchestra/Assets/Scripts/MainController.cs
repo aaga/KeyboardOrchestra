@@ -491,7 +491,7 @@ public class MainController : MonoBehaviour {
 				Debug.Log ("currRound in Main: " + currRound);
 
 				//user got it wrong
-				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3) {
+				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3 || !step1Script.goToNextStep) {
 					myChuck.BroadcastEvent ("keyFailTrigger");
 					staticLevel++;
 				}
