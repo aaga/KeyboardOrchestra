@@ -37,7 +37,7 @@ public class MainController : MonoBehaviour {
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
 		{ { "","fun","holy", ""}, { "", "the", "art",  ""} },
-		{ { "","a*b*c","*d*e*", ""}, { "", "", "1357",  ""} },
+		{ { "","a*b*c","de", ""}, { "", "", "1357",  ""} },
 		{ { "","*nn","fun", ""}, { "", "a*b*c", "*d*e*",  ""} },
 		{ { "","nuf","fun", ""}, { "", "qwe", "asdf",  ""} },
 		{ { "","ifl","ok", ""}, { "", "****y", "qwert",  ""} },

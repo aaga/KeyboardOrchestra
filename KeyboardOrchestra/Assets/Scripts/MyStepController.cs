@@ -30,6 +30,10 @@ public class MyStepController : MonoBehaviour {
 	private bool sent1000;
 	public bool goToNextStep;
 
+	private float timeOfLastBeat;
+	private float beat;
+	private float prevBeat;
+
 	private Color32 topColor;
 	private Color32 bottomColor;
 	private Color32 correctColor;
@@ -58,6 +62,10 @@ public class MyStepController : MonoBehaviour {
 		sent1000 = false;
 		goToNextStep = false;
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
+
+		prevBeat = 0;
+		beat = 0;
+		timeOfLastBeat = 0;
 
 		currLetter = 0;
 		linePos = 0.0f;
@@ -296,6 +304,14 @@ public class MyStepController : MonoBehaviour {
 		temp.x = initialTickerX + linePos * 25f;
 		ticker.transform.position = temp;
 
+		//make sure the interaction is on beat
+		//beat is aprox .2-.3 secs long
+		beat = mainScript.myBeat;
+		if (beat != prevBeat) {
+			prevBeat = beat;
+			timeOfLastBeat = Time.time;
+		}
+
 		//do the interaction
 		getKey();
 
@@ -408,19 +424,32 @@ public class MyStepController : MonoBehaviour {
 
 		if (currLetter < stepInstructions [1].Length && !thisKeyboard) {
 			if (letterToAdd [0] == stepInstructions [1] [currLetter]) {
-				pressTop = true;
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 				currKeysTop.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
-//				gotCorrect();
+
+				if (mainScript.currRound < 7) {
+					pressTop = true;
+				}
+
+				//chheck to see if key pressis within a buffer time of when the best is
+				//.08 seconds after the last press or around .07 before...the second one is estimated time before the next one based on measured beat time
+				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= .08 || (Time.time - timeOfLastBeat) >= .18)){
+					pressTop = true;
+				}
 			}
 		}
 
 		if (currLetter < stepInstructions [2].Length && thisKeyboard) {
 			if (letterToAdd [0] == stepInstructions [2] [currLetter] || stepInstructions [2] [currLetter] == '*') {
-				pressBottom = true;
 				currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 				currKeysBottom.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
-//				gotCorrect();
+				if (mainScript.currRound < 7) {
+					pressBottom = true;
+				}
+				//pressed key in time
+				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= .08 || (Time.time - timeOfLastBeat) >= .18)){
+					pressBottom = true;
+				}
 			}
 		}
 	}
@@ -480,22 +509,6 @@ public class MyStepController : MonoBehaviour {
 			}
 		}
 	}
-
-//	void gotCorrect() {
-//		if (mainScript.currRound >= 7){
-//			if (currLetter == 0) {
-//				mainScript.playChordNote (0, 53);
-//			} else if (currLetter == 1) {
-//				mainScript.playChordNote (0, 56);
-//			} else if (currLetter == 2) {
-//				mainScript.playChordNote (0, 60);
-//			} else if (currLetter == 3) {
-//				mainScript.playChordNote (0, 65);
-//			} else if (currLetter == 4) {
-//				mainScript.playChordNote (0, 77);
-//			}
-//		}
-//	}
 
 	void GetIntCallback( System.Int64 messageReceived )
 	{

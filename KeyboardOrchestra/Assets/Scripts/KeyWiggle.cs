@@ -108,9 +108,9 @@ public class KeyWiggle : MonoBehaviour {
 			newBeat = !newBeat;
 		}
 		if (newBeat) {
-			scale -= .01f;
+			scale -= .009f;
 		} else {
-			scale += .01f;
+			scale += .009f;
 		}
 		transform.localScale = new Vector3(scale, scale, scale);
 
