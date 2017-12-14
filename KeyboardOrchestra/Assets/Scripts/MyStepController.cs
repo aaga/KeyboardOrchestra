@@ -68,7 +68,7 @@ public class MyStepController : MonoBehaviour {
 		prevBeat = 0;
 		beat = 0;
 		timeOfLastBeat = 0;
-		beatBufferTime = .8f;
+		beatBufferTime = .09f;
 		prevBeatLength = 0;
 
 		currLetter = 0;
@@ -452,11 +452,13 @@ public class MyStepController : MonoBehaviour {
 					pressBottom = true;
 				}
 				//pressed key in time
-				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= .08 || (Time.time - timeOfLastBeat) >= .18)){
+				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= beatBufferTime || (Time.time - timeOfLastBeat) >= (prevBeatLength - beatBufferTime))){
 					pressBottom = true;
 				}
 			}
 		}
+
+
 	}
 
 	//HANDLE KEY UPS

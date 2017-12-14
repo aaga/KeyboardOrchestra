@@ -397,6 +397,13 @@ public class MainController : MonoBehaviour {
 			tickerStarted = true;
 		}
 
+		//YOU LOSE
+		if (staticLevel == 3) {
+			stopBassline ();
+			offChord ();
+
+		}
+
 		myChuck.GetFloat ("pos", myGetPosCallback);
 		myChuck.GetFloat ("count", myGetBeatCallback);
 
@@ -461,7 +468,7 @@ public class MainController : MonoBehaviour {
 				alreadyCorrect = true;
 
 				//immediacy (brings to end of round)
-				if (step1Script.goToNextStep || currRound == 1) {	//BUG: remove hacky currRound Check
+				if (step1Script.goToNextStep) {	//BUG: remove hacky currRound Check
 					Debug.Log ("go to next round");
 					previousPos = myPos - 1;
 					step1Script.goToNextStep = false;
@@ -483,8 +490,8 @@ public class MainController : MonoBehaviour {
 				Debug.Log ("currRound in Main: " + currRound);
 
 				//user got it wrong
-				if (step1Script.bottomDone != true || step1Script.topDone != true) {
-					myChuck.BroadcastEvent ("keyFchrodailTrigger");
+				if (step1Script.bottomDone != true || step1Script.topDone != true && staticLevel < 3) {
+					myChuck.BroadcastEvent ("keyFailTrigger");
 					staticLevel++;
 				}
 				step1Script.updateStaticBar (staticLevel);
