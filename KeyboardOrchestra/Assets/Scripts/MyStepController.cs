@@ -301,7 +301,6 @@ public class MyStepController : MonoBehaviour {
 
 		//if received instructions, and both are completed, and both existed in the first place
 		if (stepInstructions.Length > 0 && currLetter >= stepInstructions [1].Length  && currLetter >= stepInstructions [2].Length) {
-			//Debug.Log ("FINISHED BOTH WORDS");
 			topDone = true;
 			bottomDone = true;
 
@@ -314,6 +313,7 @@ public class MyStepController : MonoBehaviour {
 
 			//both people done
 			if (otherReady) {
+				Debug.Log ("other ready true");
 				otherReady = false;
 				startTheTicker = true;
 				goToNextStep = true;
