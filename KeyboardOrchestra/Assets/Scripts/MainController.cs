@@ -423,7 +423,7 @@ public class MainController : MonoBehaviour {
 				}
 
 				//up the speed not on the first time
-				if (currRound > 7) {
+				if (currRound > 10) {
 					offChord ();
 					timestep--;
 					myChuck.SetInt ("timeStep", timestep);
@@ -444,6 +444,7 @@ public class MainController : MonoBehaviour {
 				updatedRound = false;
 				Debug.Log ("done with level animation");
 				levelAnimationDone = true;				//weird bool to make level after the animation not skip
+				previousPos = myPos - 1;
 			}
 		} else if (specialWords [currRound, playerNumber, 3] == "SETUP") {
 			setupScreen.SetActive (true);

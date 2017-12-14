@@ -90,27 +90,27 @@ public class KeyWiggle : MonoBehaviour {
 	void pulseKeys(){
 
 		//SOLUTION WITH POS DOESNT ALWAYS SYNC WITH BEAT
-//		float fraction = 1f / mainScript.timestep; //change to timestep later
-//		float chuckBeat = ((mainScript.myPos - mainScript.previousPos) % fraction) / fraction;	
-//
-//		//flip chuckBeat around to decrease size
-//		if (chuckBeat >= .5) {
-//			chuckBeat = 1 - chuckBeat;
-//		}
-//		scale = Mathf.Pow (chuckBeat, 2);
-//		scale = .9f + ((.2f) / (1.1f)) * scale*2;
-//		transform.localScale = new Vector3 (scale, scale, scale);
+		float fraction = 1f / 8.0f;//mainScript.timestep; //change to timestep later
+		float chuckBeat = ((mainScript.myPos - mainScript.previousPos) % fraction) / fraction;	
 
-		if (mainScript.myBeat%2 == 0 && prevBeat != mainScript.myBeat) {
-			prevBeat = mainScript.myBeat;
-			newBeat = !newBeat;
+		//flip chuckBeat around to decrease size
+		if (chuckBeat >= .5) {
+			chuckBeat = 1 - chuckBeat;
 		}
-		if (newBeat) {
-			scale -= .009f;
-		} else {
-			scale += .009f;
-		}
-		transform.localScale = new Vector3(scale, scale, scale);
+		scale = Mathf.Pow (chuckBeat, 2);
+		scale = .9f + ((.2f) / (1.1f)) * scale*2;
+		transform.localScale = new Vector3 (scale, scale, scale);
+
+//		if (mainScript.myBeat%2 == 0 && prevBeat != mainScript.myBeat) {
+//			prevBeat = mainScript.myBeat;
+//			newBeat = !newBeat;
+//		}
+//		if (newBeat) {
+//			scale -= .009f;
+//		} else {
+//			scale += .009f;
+//		}
+//		transform.localScale = new Vector3(scale, scale, scale);
 
 	}
 }
