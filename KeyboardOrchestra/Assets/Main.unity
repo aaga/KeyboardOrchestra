@@ -1263,7 +1263,6 @@ MonoBehaviour:
   startAnimation: 0
   doneAnimation: 0
   main: {fileID: 0}
-  mainScript: {fileID: 0}
   right: 1
   left: 0
   open: 0
@@ -1365,7 +1364,6 @@ MonoBehaviour:
   startAnimation: 0
   doneAnimation: 0
   main: {fileID: 1333581974}
-  mainScript: {fileID: 0}
   right: 1
   left: 0
   open: 0
@@ -1621,7 +1619,6 @@ MonoBehaviour:
   startAnimation: 0
   doneAnimation: 0
   main: {fileID: 1333581974}
-  mainScript: {fileID: 0}
   right: 0
   left: 1
   open: 0
@@ -1786,6 +1783,11 @@ Prefab:
         type: 2}
       propertyPath: timestep
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 114933240987151770, guid: 1a9c55d7978c34fc889f0edbaf31f34f,
+        type: 2}
+      propertyPath: playerNumber
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1a9c55d7978c34fc889f0edbaf31f34f, type: 2}
