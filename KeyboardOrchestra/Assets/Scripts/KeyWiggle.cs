@@ -8,7 +8,13 @@ public class KeyWiggle : MonoBehaviour {
 	public float maxRotation;
 	public float speed;
 
+	public GameObject main;
+	public MainController mainScript;
+
 	private float scale;
+	private float prevBeat;
+	private bool newBeat;
+	private float destruction;
 
 	private int clockwise;
 	private Vector3 rotationPosition;
@@ -18,6 +24,10 @@ public class KeyWiggle : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		scale = 1;
+		prevBeat = 0;
+		newBeat = true;
+		mainScript = main.GetComponent<MainController> ();
+		destruction = 1f;
 
 		doRotations = true;
 		minRotation = 3.0f;
@@ -44,32 +54,22 @@ public class KeyWiggle : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		//ChucK sends a num 0-1 and 1 is when we want scale to be largest (on beat)
 
-		/*
-		float pulseSpeed = 40f; //todo: change to chuck value
-		float pulseRange = .15f; // pulse from .8 to 1 times the scale
-		//PingPongs the value t, so that it is never larger than length and never smaller than 0.
-		scale = Mathf.PingPong(Time.time * pulseSpeed, 10);
-		scale = Mathf.Pow (scale, 2);
-		scale = (1 - pulseRange) + (scale / 100f) * (pulseRange);
-		transform.localScale = new Vector3(scale, scale, scale);
-		if (scale >= .99) {
-			Debug.Log ("time: " + Time.time);
+		//start pulsing with music
+		if (mainScript.currRound >= 7) {
+			pulseKeys ();
 		}
 
-		float pulseRange = .15f; // pulse from .8 to 1 times the scale
-		float chuckBeat;
-		chuckBeat * 20;	//0-20 (switch at 10)
-
-		//flip chuckBeat around to decrease size
-		if(chuckBeat >= 10){
-			chuckBeat = 20 - chuckBeat;
+		//if they got something wrong, change speed
+		if (mainScript.staticLevel > 0) {
+			speed = 70f + mainScript.staticLevel * 20f;
+		} else {
+			speed = 70f;
 		}
-		chuckBeat = Mathf.Pow(chuckBeat,2);	//0-100 in quadratic
-		scale = (1 - pulseRange) + (scale / 100f) * (pulseRange);
-		transform.localScale = new Vector3(scale, scale, scale);
-*/
+		if (mainScript.staticLevel == 3) {
+			destruction += .001f;
+			transform.localScale = new Vector3(destruction, destruction, 1);
+		}
 
 		if (doRotations) {
 			transform.RotateAround (rotationPosition, Vector3.forward, Time.deltaTime * speed * clockwise);
@@ -85,5 +85,34 @@ public class KeyWiggle : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	void pulseKeys(){
+
+		//SOLUTION WITH POS DOESNT ALWAYS SYNC WITH BEAT
+//		float fraction = 1f / 8f; //change to timestep later
+//		float chuckBeat = ((mainScript.myPos + .001f - mainScript.previousPos) % fraction) / fraction;	
+//		chuckBeat = chuckBeat * 20;	//0-20 (switch at 10)
+//
+//		//flip chuckBeat around to decrease size
+//		if (chuckBeat >= 10) {
+//			chuckBeat = 20 - chuckBeat;
+//		}
+//		chuckBeat = Mathf.Pow (chuckBeat, 2);	//0-100 in quadratic
+//		scale = (chuckBeat / 100f);
+//		scale = .9f + ((.2f) / (1.1f)) * scale;
+//		transform.localScale = new Vector3 (scale, scale, scale);
+
+		if (prevBeat != mainScript.myBeat) {
+			prevBeat = mainScript.myBeat;
+			newBeat = !newBeat;
+		}
+		if (newBeat) {
+			scale -= .01f;
+		} else {
+			scale += .01f;
+		}
+		transform.localScale = new Vector3(scale, scale, scale);
+
 	}
 }

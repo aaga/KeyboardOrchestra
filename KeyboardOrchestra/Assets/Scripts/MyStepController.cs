@@ -319,6 +319,11 @@ public class MyStepController : MonoBehaviour {
 			}
 		}
 
+		if (mainScript.staticLevel >= 3) {
+			currKeysTop.SetActive (false);
+			currKeysBottom.SetActive (false);
+		}
+
 	}
 
 	//Create a visual key for each letter in the instructions
@@ -343,6 +348,10 @@ public class MyStepController : MonoBehaviour {
 				newKey.transform.GetChild (2).transform.position = new Vector3 (newKey.transform.GetChild (2).transform.position.x, newKey.transform.GetChild (2).transform.position.y, 0f);
 
 				newKey.transform.parent = currKeys.transform;
+
+				//set the main as the correct one since Default Key is a prefab and doesnt have access to the curreent Main
+				newKey.GetComponent<KeyWiggle> ().main = main;
+				newKey.GetComponent<KeyWiggle> ().mainScript = mainScript;
 			
 				if (whichComputer == "top") {
 					newKey.transform.GetChild (1).GetComponent<Renderer> ().material.color = topColor;
@@ -393,7 +402,7 @@ public class MyStepController : MonoBehaviour {
 	void doKeyDown(int it, bool thisKeyboard) {
 		string letterToAdd = acceptableKeys [it, 1];
 
-		if (thisKeyboard) {
+		if (thisKeyboard && mainScript.currRound < 7) {
 			myChuck.BroadcastEvent ("keyDownTrigger");
 		}
 
@@ -402,6 +411,7 @@ public class MyStepController : MonoBehaviour {
 				pressTop = true;
 				currKeysTop.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 				currKeysTop.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
+//				gotCorrect();
 			}
 		}
 
@@ -410,6 +420,7 @@ public class MyStepController : MonoBehaviour {
 				pressBottom = true;
 				currKeysBottom.transform.GetChild(currLetter).GetChild(1).GetComponent<Renderer> ().material.color = Color.gray;
 				currKeysBottom.transform.GetChild (currLetter).GetComponent<KeyWiggle> ().stopRotations ();
+//				gotCorrect();
 			}
 		}
 	}
@@ -422,16 +433,16 @@ public class MyStepController : MonoBehaviour {
 			pressBottom = false;
 			pressTop = false;
 			currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
-			gotCorrect();
-			if (thisKeyboard) {
+			currLetter++;
+			if (thisKeyboard && mainScript.currRound < 7) {
 				myChuck.BroadcastEvent ("keyCorrectTrigger");
 			}
 		} else if (pressBottom && (currLetter >= stepInstructions [1].Length || stepInstructions [1] [currLetter] == '*')) {
 			pressBottom = false;
 			pressTop = false;
 			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
-			gotCorrect();
-			if (thisKeyboard) {
+			currLetter++;
+			if (thisKeyboard && mainScript.currRound < 7) {
 				myChuck.BroadcastEvent ("keyCorrectTrigger");
 			}
 		} else if ((doubleWhammy == 1 && pressedLetter[0] == stepInstructions[2][currLetter]) ||
@@ -441,8 +452,10 @@ public class MyStepController : MonoBehaviour {
 			pressBottom = false;
 			pressTop = false;
 			doubleWhammy = 0;
-			gotCorrect();
-			myChuck.BroadcastEvent ("keyCorrectTrigger");
+			currLetter++;
+			if (mainScript.currRound < 7) {
+				myChuck.BroadcastEvent ("keyCorrectTrigger");
+			}
 
 		} else if (pressTop && pressBottom) {
 			if (pressedLetter [0] == stepInstructions [1] [currLetter]) {
@@ -451,7 +464,7 @@ public class MyStepController : MonoBehaviour {
 				doubleWhammy = 2;
 			}
 		} else {
-			if (thisKeyboard) {
+			if (thisKeyboard && mainScript.currRound < 7) {
 				myChuck.BroadcastEvent ("keyUpTrigger");
 			}
 			if (currLetter < stepInstructions [1].Length && pressedLetter [0] == stepInstructions [1] [currLetter] && !thisKeyboard) {
@@ -468,20 +481,21 @@ public class MyStepController : MonoBehaviour {
 		}
 	}
 
-	void gotCorrect() {
-		if (currLetter == 0) {
-			mainScript.playChordNote (0, 53);
-		} else if (currLetter == 1) {
-			mainScript.playChordNote (0, 56);
-		} else if (currLetter == 2) {
-			mainScript.playChordNote (0, 60);
-		} else if (currLetter == 3) {
-			mainScript.playChordNote (0, 65);
-		} else if (currLetter == 4) {
-			mainScript.playChordNote (0, 77);
-		}
-		currLetter++;
-	}
+//	void gotCorrect() {
+//		if (mainScript.currRound >= 7){
+//			if (currLetter == 0) {
+//				mainScript.playChordNote (0, 53);
+//			} else if (currLetter == 1) {
+//				mainScript.playChordNote (0, 56);
+//			} else if (currLetter == 2) {
+//				mainScript.playChordNote (0, 60);
+//			} else if (currLetter == 3) {
+//				mainScript.playChordNote (0, 65);
+//			} else if (currLetter == 4) {
+//				mainScript.playChordNote (0, 77);
+//			}
+//		}
+//	}
 
 	void GetIntCallback( System.Int64 messageReceived )
 	{

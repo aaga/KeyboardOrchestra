@@ -15,25 +15,25 @@ public class MainController : MonoBehaviour {
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
-		{ { "", "", "test", "0.5 => Global.bassGain;"}, {"Waiting for next instruction...", "", "", ""} },
-		{ { "","","hello",""}, { "", "", "", "0.7 => Global.synthGain;"} },
-		{ { "", "", "sup", @"0.4 => Global.synthGain2;"}, {"", "", "; ;", "0.3 => Global.tripletGain;0.4 => Global.synthGain;"} },
-		{ { "","","word",@"[70,72,74,72] @=> Global.synthMelody2;[51,51,58,58] @=> Global.bassMelody;"}, { "", "", "roof", "[67,68,70,68] @=> Global.synthMelody;"} },
-		{ { "","","lol",@"[69,71,73,71] @=> Global.synthMelody2;[50,50,57,57] @=> Global.bassMelody;"}, {"","","key",@"[66,67,69,67] @=> Global.synthMelody;0.0 => Global.tripletGain;"} },
+		{ { "", "", "test", ""}, {"Waiting for next instruction...", "", "", ""} },
+		{ { "","","hello",""}, { "", "", "", ""} },
+		{ { "", "", "sup", ""}, {"", "", "; ;", ""} },
+		{ { "","","word",""}, { "", "", "roof", ""} },
+		{ { "","","lol",""}, {"","","key",""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
-		{ { "","","gg",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","**a","hip",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","*n*","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","","wow",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","0","good",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","","gg", ""}, { "", "", "1357",  ""} },
+		{ { "","**a","hip", ""}, { "", "", "1357",  ""} },
+		{ { "","*n*","fun", ""}, { "", "", "1357",  ""} },
+		{ { "","","wow", ""}, { "", "", "1357",  ""} },
+		{ { "","0","good", ""}, { "", "", "1357",  ""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
-		{ { "","0","holy",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","*aa","jeez",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","*nn","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","fun","fun",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
-		{ { "","**l","ok",@"0.0 => Global.synthGain2;0.6 => Global.longSynthGain;"}, { "", "", "1357", "0.0 => Global.synthGain;"} },
+		{ { "","0","holy", ""}, { "", "", "1357",  ""} },
+		{ { "","*aa","jeez", ""}, { "", "", "1357",  ""} },
+		{ { "","*nn","fun", ""}, { "", "", "1357",  ""} },
+		{ { "","fun","fun", ""}, { "", "", "1357",  ""} },
+		{ { "","**l","ok", ""}, { "", "", "1357",  ""} },
 
 		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
 		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
@@ -60,17 +60,22 @@ public class MainController : MonoBehaviour {
 
 	ChuckInstance myChuck;
 	Chuck.FloatCallback myGetPosCallback;
+	Chuck.FloatCallback myGetBeatCallback;
 
 	private MyStepController step1Script;
 
 	//Ticker
-	private int currRound;
-	private float myPos;
-	private float previousPos;
+	public int currRound;
+	public float myPos;
+	public float previousPos;
 	private bool updatedRound;
 	private bool tickerStarted;
 	private bool alreadyCorrect;
-	private int staticLevel;
+	public int staticLevel;
+	public float myBeat;
+
+	private int currKey = 41;
+	private int currStepInLevel;
 
 	//ALL colors
 	private Color32 correctColor;
@@ -88,6 +93,8 @@ public class MainController : MonoBehaviour {
 		step1Script = step1.GetComponent<MyStepController> ();
 		myChuck = GetComponent<ChuckInstance> ();
 		myGetPosCallback = Chuck.CreateGetFloatCallback( GetPosCallback );
+		myGetBeatCallback = Chuck.CreateGetFloatCallback( GetBeatCallback );
+
 		currRound = 0;
 		staticLevel = 0;
 
@@ -116,6 +123,7 @@ public class MainController : MonoBehaviour {
 
 					 	" + timestep + @" => external int timeStep;
 						external float pos;
+						external float count;
 
 						fun void updatePos() {
 							timeStep::second => dur currentTimeStep;
@@ -199,7 +207,7 @@ public class MainController : MonoBehaviour {
 						    0.5 => float sustain;
 						    25::ms => dur release;
 						    
-						    0.3 => g.gain;
+						    0.03 => g.gain;
 						    
 						    for (0 => int i; i < size; i++) {
 						        osc[i] => adsr[i];
@@ -215,6 +223,7 @@ public class MainController : MonoBehaviour {
 						    public void softOff() {
 						        for (0 => int i; i < size; i++) {
 						            1 => adsr[i].keyOff;
+									100::ms => now;
 						        }
 						    }
 						    
@@ -299,7 +308,7 @@ public class MainController : MonoBehaviour {
 						    
 						    [ 41, 41, 44, 46] @=> int bline[];
 						    0 => int pos;
-						    0 => int count;
+						    0 => count;
 						    
 						    250::ms => dur length;
 						    
@@ -379,6 +388,8 @@ public class MainController : MonoBehaviour {
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
+		myChuck.GetFloat ("count", myGetBeatCallback);
+
 
 		//TRIGGER NEW LEVEL ANIMATION
 		if (specialWords [currRound, playerNumber, 3] == "LEVEL") {
@@ -387,6 +398,18 @@ public class MainController : MonoBehaviour {
 				leftLevelScript.startAnimation = true;
 				rightLevelScript.startAnimation = true;
 			} else {
+				//up the key of the music
+				currKey++;
+				setKey (currKey);
+				currStepInLevel = 1;
+
+				//up the speed not on the first time
+				if (currRound > 7) {
+					offChord ();
+					timestep--;
+					myChuck.SetInt ("timeStep", timestep);
+				}
+
 				//RESET ALL VARIABLES TO INITIAL POSITION
 				leftLevelScript.doneAnimation = false;
 				rightLevelScript.doneAnimation = false;
@@ -414,11 +437,9 @@ public class MainController : MonoBehaviour {
 		} else {
 
 			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
-			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && (!alreadyCorrect || step1Script.goToNextStep)) {
-				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
-//					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
-				}
+			if (myPos >= previousPos && step1Script.bottomDone == true && step1Script.topDone == true && (!alreadyCorrect || step1Script.goToNextStep)) {
 
+				Debug.Log ("alreadyCorrect: " + alreadyCorrect + " goToNextStep: " + step1Script.goToNextStep);
 				//REWARD BY DECREASING STATIC
 				if (staticLevel > 0) {
 					staticLevel--;
@@ -427,9 +448,10 @@ public class MainController : MonoBehaviour {
 				alreadyCorrect = true;
 
 				//immediacy (brings to end of round)
-				if (step1Script.goToNextStep) {
+				if (step1Script.goToNextStep || currRound == 1) {	//BUG: remove hacky currRound Check
 					Debug.Log ("go to next round");
 					previousPos = myPos - 1;
+					step1Script.goToNextStep = false;
 				}
 			}
 
@@ -445,19 +467,7 @@ public class MainController : MonoBehaviour {
 				}
 
 				resetBassline ();
-				offChord ();
 				Debug.Log ("currRound in Main: " + currRound);
-				if (currRound == 7) {
-					startBassline ();
-				}
-
-				//increase speed
-				if (currRound >= 5) {
-					if (currRound % 2 == 0) {
-						//timestep--;
-						//myChuck.SetInt ("timeStep", timestep);
-					}
-				}
 
 				//user got it wrong
 				if (step1Script.bottomDone != true || step1Script.topDone != true) {
@@ -474,10 +484,16 @@ public class MainController : MonoBehaviour {
 					int currLevelText = currRound / 5;
 					levelMesh.text = "Level " + currLevelText.ToString ();
 					updatedRound = false;
+					playSelectChord ();
+
 				}
 				levelAnimationDone = false;
 				setupDone = false;
 				Debug.Log ("Current Round: " + currRound);
+
+				if (currRound == 7) {
+					startBassline ();
+				}
 			}
 			float distanceMultiplier = 1.5f;
 			step1Script.linePos = (myPos - previousPos) * distanceMultiplier;
@@ -528,6 +544,24 @@ public class MainController : MonoBehaviour {
 	public void offChord() {
 		myChuck.RunCode ("Global.chord.softOff();");
 	}
+	
+	public void playSelectChord() {
+		if (currRound >= 7 && step1Script.bottomDone == true && step1Script.topDone == true) {
+			int chordNote = 0;
+			if (currStepInLevel == 1) {
+				playChordNote (0, currKey);
+			} else if (currStepInLevel == 2) {
+				playChordNote (1, currKey + 3);
+			} else if (currStepInLevel == 3) {
+				playChordNote (2, currKey + 7);
+			} else if (currStepInLevel == 4) {
+				playChordNote (3, currKey + 12);
+			} else if (currStepInLevel == 5) {
+				playChordNote (4, currKey + 24);
+			}
+			currStepInLevel++;
+		}
+	}
 
 	string[] oneD(int index1, int index2) {
 		string[] oneDArray = new string[4];
@@ -542,6 +576,11 @@ public class MainController : MonoBehaviour {
 	void GetPosCallback( System.Double pos )
 	{
 		myPos = (float) pos;
+	}
+
+	void GetBeatCallback( System.Double beat )
+	{
+		myBeat = (float) beat;
 	}
 }
 

@@ -7,6 +7,9 @@ public class LevelController : MonoBehaviour {
 	public bool startAnimation;
 	public bool doneAnimation;
 
+	public GameObject main;
+	private MainController mainScript;
+
 	public bool right;
 	public bool left;
 
@@ -22,6 +25,7 @@ public class LevelController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		mainScript = main.GetComponent<MainController> ();
 		startAnimation = false;
 		open = false;
 		close = false;
@@ -49,11 +53,19 @@ public class LevelController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		//player Loses Screen
+		if (mainScript.staticLevel >= 3) {
+			TextMesh levelMesh = (TextMesh)levelText.GetComponent(typeof(TextMesh));
+			levelMesh.text = "YOU LOSE!";
+			startAnimation = true;
+			GetComponent<Renderer> ().material.color = new Color32 ((byte)UnityEngine.Random.Range(0f, 255f), (byte)UnityEngine.Random.Range(0f, 255f), (byte)UnityEngine.Random.Range(0f, 255f), 255);
+		}
+
 		//RUN FULL OPEN & CLOSE ANIMATION HERE
 		if (startAnimation) {
 			if (!closeDone) {
 				close = true;
-			}else if (!openDone) {
+			}else if (!openDone && mainScript.staticLevel < 3) {
 				open = true;
 			}
 			if (openDone && closeDone) {
