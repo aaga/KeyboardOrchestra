@@ -33,6 +33,8 @@ public class MyStepController : MonoBehaviour {
 	private float timeOfLastBeat;
 	private float beat;
 	private float prevBeat;
+	private float beatBufferTime;
+	private float prevBeatLength;
 
 	private Color32 topColor;
 	private Color32 bottomColor;
@@ -66,6 +68,8 @@ public class MyStepController : MonoBehaviour {
 		prevBeat = 0;
 		beat = 0;
 		timeOfLastBeat = 0;
+		beatBufferTime = .8f;
+		prevBeatLength = 0;
 
 		currLetter = 0;
 		linePos = 0.0f;
@@ -309,6 +313,7 @@ public class MyStepController : MonoBehaviour {
 		beat = mainScript.myBeat;
 		if (beat != prevBeat) {
 			prevBeat = beat;
+			prevBeatLength = Time.time - timeOfLastBeat;
 			timeOfLastBeat = Time.time;
 		}
 
@@ -433,7 +438,7 @@ public class MyStepController : MonoBehaviour {
 
 				//chheck to see if key pressis within a buffer time of when the best is
 				//.08 seconds after the last press or around .07 before...the second one is estimated time before the next one based on measured beat time
-				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= .08 || (Time.time - timeOfLastBeat) >= .18)){
+				else if(mainScript.currRound >= 7 &&  ((Time.time - timeOfLastBeat) <= beatBufferTime || (Time.time - timeOfLastBeat) >= (prevBeatLength - beatBufferTime))){
 					pressTop = true;
 				}
 			}

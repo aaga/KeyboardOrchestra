@@ -15,6 +15,9 @@ public class MainController : MonoBehaviour {
 		{ { "Ready to get Started?", "", "ready", ""}, {"Ready to get Started?", "", "ready", ""} },
 
 		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
+		{ { "You must type to the beat of the music!", "", "ok", ""}, {"You must type to the beat of the music!", "", "ok", ""} },
+
+		{ { "","","","LEVEL"}, { "", "", "", "LEVEL"} },//new level
 		{ { "", "", "test", ""}, {"Waiting for next instruction...", "", "", ""} },
 		{ { "","","hello",""}, { "", "", "wow", ""} },
 		{ { "", "", "sup", ""}, {"", "", "; ;", ""} },
@@ -406,9 +409,11 @@ public class MainController : MonoBehaviour {
 				rightLevelScript.startAnimation = true;
 			} else {
 				//up the key of the music
-				currKey++;
-				setKey (currKey);
-				currStepInLevel = 1;
+				if (currRound > 6) {
+					currKey++;
+					setKey (currKey);
+					currStepInLevel = 1;
+				}
 
 				//up the speed not on the first time
 				if (currRound > 7) {
@@ -478,7 +483,7 @@ public class MainController : MonoBehaviour {
 
 				//user got it wrong
 				if (step1Script.bottomDone != true || step1Script.topDone != true) {
-					myChuck.BroadcastEvent ("keyFailTrigger");
+					myChuck.BroadcastEvent ("keyFchrodailTrigger");
 					staticLevel++;
 				}
 				step1Script.updateStaticBar (staticLevel);
@@ -488,8 +493,13 @@ public class MainController : MonoBehaviour {
 				//move on to next round
 				if (currRound < specialWords.GetLength (0) && !levelAnimationDone && !setupDone) {
 					currRound++;
-					int currLevelText = currRound / 5;
-					levelMesh.text = "Level " + currLevelText.ToString ();
+					int currLevelText = (currRound - 2) / 5;
+					if (currRound == 6) {
+						levelMesh.text = "SURPRISE";
+					} else {
+						levelMesh.text = "Level " + currLevelText.ToString ();
+
+					}
 					updatedRound = false;
 					playSelectChord ();
 
@@ -553,7 +563,7 @@ public class MainController : MonoBehaviour {
 	}
 	
 	public void playSelectChord() {
-		if (currRound >= 7 && step1Script.bottomDone == true && step1Script.topDone == true) {
+		if (currRound >= 9 && step1Script.bottomDone == true && step1Script.topDone == true) {
 			int chordNote = 0;
 			if (currStepInLevel == 1) {
 				playChordNote (0, currKey);
