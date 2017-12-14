@@ -108,8 +108,6 @@ public class MainController : MonoBehaviour {
 			initialIntroGain = "0.0";
 		}
 		myChuck.RunCode(@"
-						public class Global {
-						}
 						external Event gotCorrect;
 						external Event startTicker;
 
@@ -244,7 +242,7 @@ public class MainController : MonoBehaviour {
 						    (0::ms, 10::ms, 0.0, 0::ms ) => bda.set;
 						    
 						    // define snare drum
-						    Noise n => ADSR sna => Gain g => dac;
+						    Noise n => ADSR sna => Gain g;
 						    0.15 => g.gain;
 						    (0::ms, 25::ms, 0.0, 0::ms) => sna.set;
 						    
@@ -291,13 +289,13 @@ public class MainController : MonoBehaviour {
 
 						class BassDrumLoop {
 						    
-							Gain g => dac;
-							g.gain(1);
+							Gain bdlGain => dac;
+							bdlGain.gain(1);
 						    DrumSet drm;
-						    drm.connect( g );
+						    drm.connect( bdlGain );
 						    
 						    Bass bass;
-						    bass.connect( g );
+						    bass.connect( bdlGain );
 						    
 						    [ 41, 41, 44, 46] @=> int bline[];
 						    0 => int pos;
@@ -318,9 +316,14 @@ public class MainController : MonoBehaviour {
 						        [ key, key, key + 3, key + 5] @=> bline;
 						    }
 
-							public void stop() {
-							        g.gain(0);
+							public void setGain(float gainToSet) {
+							        bdlGain.gain(gainToSet);
 							}
+
+						    public void stop() {
+								<<< ""trying to stop"" >>>;
+						        setGain(0);
+						    }
 						    
 						    public void play() {
 						        while ( true ) {
@@ -339,18 +342,22 @@ public class MainController : MonoBehaviour {
 						    }
 						    
 						}
-						BassDrumLoop bdl;
-						Chord chord;
+						public class Global {
+							static BassDrumLoop @ bdl;
+							static Chord @ chord;
+						}
+
+						new BassDrumLoop @=> Global.bdl;
+						new Chord @=> Global.chord;
 
 						startTicker => now;
-								
 						while( true )
 						{
 							spork ~ updatePos();
 							// spork ~ playCorrect();
 							// 50::ms => now; //delay to make playCorrect not trigger twice
 							timeStep::second => now;
-						}
+						}						
 					");
 	}
 	
@@ -409,7 +416,7 @@ public class MainController : MonoBehaviour {
 			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
 			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && (!alreadyCorrect || step1Script.goToNextStep)) {
 				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
-					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
+//					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 				}
 
 				//REWARD BY DECREASING STATIC
@@ -435,6 +442,13 @@ public class MainController : MonoBehaviour {
 					if (playerNumber == 0) {
 						myChuck.BroadcastEvent ("endIntroMusic");
 					}
+				}
+
+				resetBassline ();
+				offChord ();
+				Debug.Log ("currRound in Main: " + currRound);
+				if (currRound == 7) {
+					startBassline ();
 				}
 
 				//increase speed
@@ -486,32 +500,33 @@ public class MainController : MonoBehaviour {
 	}
 
 	public void startBassline() {
-		myChuck.RunCode ("spork ~ bdl.play();");
+		Debug.Log ("starting bassline");
+		myChuck.RunCode ("Global.bdl.play();");
 	}
 
 	public void resetBassline() {
-		myChuck.RunCode ("bdl.reset()");
+		myChuck.RunCode ("Global.bdl.reset();");
 	}
 
 	public void stopBassline() {
-		myChuck.RunCode ("bdl.stop()");
+		myChuck.RunCode ("Global.bdl.stop();");
 	}
 
 	public void setLength(float milliseconds) {
 		milliseconds /= 16.0f;
-		myChuck.RunCode ("bdl.setLength(" + milliseconds + "::ms);");
+		myChuck.RunCode ("Global.bdl.setLength(" + milliseconds + "::ms);");
 	}
 
 	public void setKey(int key) {
-		myChuck.RunCode ("bdl.setKey(" + key + ");");
+		myChuck.RunCode ("Global.bdl.setKey(" + key + ");");
 	}
 
 	public void playChordNote(int keyNum, int note) {
-		myChuck.RunCode ("chord.play(" + keyNum + "," + note + ");");
+		myChuck.RunCode ("Global.chord.play(" + keyNum + "," + note + ");");
 	}
 
 	public void offChord() {
-		myChuck.RunCode ("chord.softOff();");
+		myChuck.RunCode ("Global.chord.softOff();");
 	}
 
 	string[] oneD(int index1, int index2) {

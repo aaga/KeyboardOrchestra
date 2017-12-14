@@ -55,7 +55,7 @@ class DrumSet {
     (0::ms, 10::ms, 0.0, 0::ms ) => bda.set;
     
     // define snare drum
-    Noise n => ADSR sna => Gain g => dac;
+    Noise n => ADSR sna => Gain g;
     0.15 => g.gain;
     (0::ms, 25::ms, 0.0, 0::ms) => sna.set;
     
@@ -102,13 +102,13 @@ class Bass {
 
 class BassDrumLoop {
     
-    Gain g => dac;
-    g.gain(1);
+	Gain bdlGain => dac;
+	bdlGain.gain(1);
     DrumSet drm;
-    drm.connect( g );
+    drm.connect( bdlGain );
     
     Bass bass;
-    bass.connect( g );
+    bass.connect( bdlGain );
     
     [ 41, 41, 44, 46] @=> int bline[];
     0 => int pos;
@@ -129,8 +129,12 @@ class BassDrumLoop {
         [ key, key, key + 3, key + 5] @=> bline;
     }
     
+    public void setGain(float gainToSet) {
+        bdlGain.gain(gainToSet);
+    }
+    
     public void stop() {
-        g.gain(0);
+        setGain(0);
     }
     
     public void play() {

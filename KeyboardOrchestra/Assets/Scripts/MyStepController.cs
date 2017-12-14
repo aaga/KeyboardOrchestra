@@ -422,7 +422,7 @@ public class MyStepController : MonoBehaviour {
 			pressBottom = false;
 			pressTop = false;
 			currKeysTop.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
-			currLetter++;
+			gotCorrect();
 			if (thisKeyboard) {
 				myChuck.BroadcastEvent ("keyCorrectTrigger");
 			}
@@ -430,7 +430,7 @@ public class MyStepController : MonoBehaviour {
 			pressBottom = false;
 			pressTop = false;
 			currKeysBottom.transform.GetChild (currLetter).GetChild (1).GetComponent<Renderer> ().material.color = correctColor;
-			currLetter++;
+			gotCorrect();
 			if (thisKeyboard) {
 				myChuck.BroadcastEvent ("keyCorrectTrigger");
 			}
@@ -441,7 +441,7 @@ public class MyStepController : MonoBehaviour {
 			pressBottom = false;
 			pressTop = false;
 			doubleWhammy = 0;
-			currLetter++;
+			gotCorrect();
 			myChuck.BroadcastEvent ("keyCorrectTrigger");
 
 		} else if (pressTop && pressBottom) {
@@ -466,6 +466,21 @@ public class MyStepController : MonoBehaviour {
 
 			}
 		}
+	}
+
+	void gotCorrect() {
+		if (currLetter == 0) {
+			mainScript.playChordNote (0, 53);
+		} else if (currLetter == 1) {
+			mainScript.playChordNote (0, 56);
+		} else if (currLetter == 2) {
+			mainScript.playChordNote (0, 60);
+		} else if (currLetter == 3) {
+			mainScript.playChordNote (0, 65);
+		} else if (currLetter == 4) {
+			mainScript.playChordNote (0, 77);
+		}
+		currLetter++;
 	}
 
 	void GetIntCallback( System.Int64 messageReceived )
