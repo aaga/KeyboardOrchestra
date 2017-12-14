@@ -332,7 +332,6 @@ public class MainController : MonoBehaviour {
 		if (step1Script.startTheTicker && !tickerStarted) {
 			myChuck.BroadcastEvent ("startTicker");
 			tickerStarted = true;
-			step1Script.startTheTicker = false;
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
@@ -385,10 +384,11 @@ public class MainController : MonoBehaviour {
 				alreadyCorrect = true;
 
 				//immediacy (brings to end of round)
-				if (step1Script.startTheTicker) {
+				if (step1Script.goToNextStep) {
 					previousPos = myPos - 1;
-//					step1Script.startTheTicker = false;
 				}
+//					step1Script.startTheTicker = false;
+				//}
 			}
 
 			//IF ticker gets to end of screen
@@ -422,7 +422,6 @@ public class MainController : MonoBehaviour {
 				//move on to next round
 				if (currRound < specialWords.GetLength (0) && !levelAnimationDone && !setupDone) {
 					currRound++;
-					step1Script.startTheTicker = false;
 					int currLevelText = currRound / 5;
 					levelMesh.text = "Level " + currLevelText.ToString ();
 					updatedRound = false;

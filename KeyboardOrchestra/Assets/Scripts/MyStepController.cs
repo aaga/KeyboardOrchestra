@@ -28,6 +28,7 @@ public class MyStepController : MonoBehaviour {
 	public bool otherReady;
 	public bool startTheTicker;
 	private bool sent1000;
+	public bool goToNextStep;
 
 	private Color32 topColor;
 	private Color32 bottomColor;
@@ -55,6 +56,7 @@ public class MyStepController : MonoBehaviour {
 		otherReady = false;
 		startTheTicker = false;
 		sent1000 = false;
+		goToNextStep = false;
 		instructionMesh = (TextMesh)instructionText.GetComponent(typeof(TextMesh));
 
 		currLetter = 0;
@@ -271,6 +273,8 @@ public class MyStepController : MonoBehaviour {
 
 		//show new display instructions each round
 		if (newRound) {
+			sent1000 = false;
+			goToNextStep = false;
 			currLetter = 0;
 
 			volumeCount = 0;
@@ -302,7 +306,7 @@ public class MyStepController : MonoBehaviour {
 			bottomDone = true;
 
 			// send message if havent sent before
-			if (!startTheTicker && !sent1000) {
+			if (!sent1000) {
 				myChuck.SetInt ("messageToSend", 1000);
 				myChuck.BroadcastEvent ("sendMessage");
 				sent1000 = true;
@@ -310,8 +314,9 @@ public class MyStepController : MonoBehaviour {
 
 			//both people done
 			if (otherReady) {
-				sent1000 = false;
 				otherReady = false;
+				startTheTicker = true;
+				goToNextStep = true;
 			}
 		}
 
