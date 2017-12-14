@@ -37,7 +37,7 @@ public class KeyWiggle : MonoBehaviour {
 		} else {
 			clockwise = -1;
 		}
-		thisRotation = Random.Range (minRotation, maxRotation);
+		//thisRotation = Random.Range (minRotation, maxRotation);
 		speed = 70.0f;
 		rotationPosition = new Vector3 (-3, -6, 0);
 		rotationPosition += transform.position;
@@ -72,7 +72,7 @@ public class KeyWiggle : MonoBehaviour {
 		}
 
 		if (doRotations) {
-			transform.RotateAround (rotationPosition, Vector3.forward, Time.deltaTime * speed * clockwise);
+			//transform.RotateAround (rotationPosition, Vector3.forward, Time.deltaTime * speed * clockwise);
 			if (clockwise == 1) {
 				if (transform.rotation.eulerAngles.z > thisRotation && transform.rotation.eulerAngles.z < 180.0f) {
 					clockwise = -1;
