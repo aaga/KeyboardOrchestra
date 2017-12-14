@@ -385,9 +385,9 @@ public class MainController : MonoBehaviour {
 				alreadyCorrect = true;
 
 				//immediacy (brings to end of round)
-				if (step1Script.otherReady) {	//WAIT: only if the other person is ready
+				if (step1Script.startTheTicker) {
 					previousPos = myPos - 1;
-					step1Script.otherReady = false;
+					step1Script.startTheTicker = false;
 				}
 			}
 
