@@ -43,7 +43,7 @@ public class MainController : MonoBehaviour {
 		{ { "","ifl","ok", ""}, { "", "****y", "qwert",  ""} },
 
 		{ { "", "", "rest", ""}, { "", "", "rest", ""} },
-		{ { "", "", "end", "0.0 => Global.longSynthGain;0.0 => Global.bassGain;"}, { "", "", "end", ""} }
+		{ { "", "", "end", ""}, { "", "", "end", ""} }
 	};
 
 	public GameObject step1;
@@ -415,6 +415,7 @@ public class MainController : MonoBehaviour {
 					offChord ();
 					timestep--;
 					myChuck.SetInt ("timeStep", timestep);
+					setLength (timestep * 1000.0f);
 				}
 
 				//RESET ALL VARIABLES TO INITIAL POSITION
@@ -536,7 +537,7 @@ public class MainController : MonoBehaviour {
 	}
 
 	public void setLength(float milliseconds) {
-		milliseconds /= 16.0f;
+		milliseconds /= 32.0f;
 		myChuck.RunCode ("Global.bdl.setLength(" + milliseconds + "::ms);");
 	}
 
@@ -587,7 +588,7 @@ public class MainController : MonoBehaviour {
 
 	void GetBeatCallback( System.Double beat )
 	{
-		myBeat = (float) beat;
+		myBeat = (float)beat;
 	}
 }
 
