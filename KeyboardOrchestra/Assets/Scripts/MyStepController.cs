@@ -310,8 +310,8 @@ public class MyStepController : MonoBehaviour {
 
 			//both people done
 			if (otherReady) {
-				startTheTicker = true;
 				sent1000 = false;
+				otherReady = false;
 			}
 		}
 

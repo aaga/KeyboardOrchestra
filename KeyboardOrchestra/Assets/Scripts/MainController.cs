@@ -141,7 +141,6 @@ public class MainController : MonoBehaviour {
 							now => time startTime;
 							
 							pos => float originalPos;
-							<<<timeStep>>>;				
 							while( now < startTime + currentTimeStep )
 							{
 								deltaTime / currentTimeStep +=> pos;
@@ -333,6 +332,7 @@ public class MainController : MonoBehaviour {
 		if (step1Script.startTheTicker && !tickerStarted) {
 			myChuck.BroadcastEvent ("startTicker");
 			tickerStarted = true;
+			step1Script.startTheTicker = false;
 		}
 
 		myChuck.GetFloat ("pos", myGetPosCallback);
@@ -387,7 +387,7 @@ public class MainController : MonoBehaviour {
 				//immediacy (brings to end of round)
 				if (step1Script.startTheTicker) {
 					previousPos = myPos - 1;
-					step1Script.startTheTicker = false;
+//					step1Script.startTheTicker = false;
 				}
 			}
 
@@ -422,6 +422,7 @@ public class MainController : MonoBehaviour {
 				//move on to next round
 				if (currRound < specialWords.GetLength (0) && !levelAnimationDone && !setupDone) {
 					currRound++;
+					step1Script.startTheTicker = false;
 					int currLevelText = currRound / 5;
 					levelMesh.text = "Level " + currLevelText.ToString ();
 					updatedRound = false;
