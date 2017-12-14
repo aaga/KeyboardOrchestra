@@ -131,7 +131,7 @@ public class MainController : MonoBehaviour {
 						external Event keyFailTrigger;
 						external Event endIntroMusic;
 
-					 	8 => external int timeStep;
+					 	32 => external int timeStep;
 						8.0 => float masterTimer;
 						external float pos;
 
@@ -370,8 +370,8 @@ public class MainController : MonoBehaviour {
 		} else {
 
 			//USER IS DONE WITH STEP BEFORE END OF TRIGGER
-			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && !alreadyCorrect) {
-
+			if (myPos >= previousPos + 0.01f && step1Script.bottomDone == true && step1Script.topDone == true && (!alreadyCorrect || step1Script.goToNextStep)) {
+				Debug.Log ("main thinks that I am done");
 				if (specialWords [currRound, playerNumber, 3] != "LEVEL") {
 					myChuck.RunCode (specialWords [currRound, playerNumber, 3]);
 				}
@@ -385,10 +385,9 @@ public class MainController : MonoBehaviour {
 
 				//immediacy (brings to end of round)
 				if (step1Script.goToNextStep) {
+					Debug.Log ("go to next round");
 					previousPos = myPos - 1;
 				}
-//					step1Script.startTheTicker = false;
-				//}
 			}
 
 			//IF ticker gets to end of screen
